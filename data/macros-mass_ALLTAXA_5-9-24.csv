@@ -1,0 +1,752 @@
+"","column_label","Site","taxonID","dateID","lengthClass","n_m2","total_mass_AFDMg_m2"
+"1","1","forested","diptera_chironomidae_f",2021-10-14,4,150.64,0.235497206793818
+"2","1","forested","diptera_chironomidae_f",2021-10-14,2,64.56,0.0147963939950506
+"3","1","forested","diptera_chironomidae_f",2021-10-14,3,193.68,0.136474002720724
+"4","1","forested","diptera_chironomidae_f",2021-05-24,2,365.84,0.0838462326386198
+"5","1","forested","diptera_chironomidae_f",2021-05-24,5,53.8,0.156051685954648
+"6","1","forested","diptera_chironomidae_f",2021-05-24,1,161.4,0.00542304
+"7","1","forested","diptera_chironomidae_f",2021-05-24,4,107.6,0.168212290567013
+"8","1","forested","diptera_chironomidae_f",2021-05-24,3,118.36,0.0834007794404427
+"9","1","forested","diptera_chironomidae_f",2021-05-24,6,96.84,0.465449986155699
+"10","1","forested","diptera_chironomidae_f",2021-06-09,3,32.28,0.0227456671201207
+"11","1","forested","diptera_chironomidae_f",2021-06-09,6,32.28,0.155149995385233
+"12","1","forested","diptera_chironomidae_f",2021-06-09,5,32.28,0.0936310115727891
+"13","1","forested","diptera_chironomidae_f",2021-07-01,7,10.76,0.0792634770413889
+"14","1","forested","diptera_chironomidae_f",2021-07-01,4,10.76,0.0168212290567013
+"15","1","forested","diptera_chironomidae_f",2021-07-01,3,21.52,0.0151637780800805
+"16","1","forested","diptera_chironomidae_f",2021-07-01,5,10.76,0.0312103371909297
+"17","1","forested","diptera_chironomidae_f",2021-07-01,2,21.52,0.00493213133168352
+"18","1","forested","diptera_chironomidae_f",2021-08-13,4,10.76,0.0168212290567013
+"19","1","forested","diptera_chironomidae_f",2021-09-07,2,129.12,0.0295927879901011
+"20","1","forested","diptera_chironomidae_f",2021-09-07,4,64.56,0.100927374340208
+"21","1","forested","diptera_chironomidae_f",2021-09-07,3,64.56,0.0454913342402415
+"22","1","forested","diptera_chironomidae_f",2021-09-07,5,10.76,0.0312103371909297
+"23","1","forested","diptera_chironomidae_f",2021-10-14,5,96.84,0.280893034718367
+"24","1","forested","diptera_chironomidae_f",2021-11-18,1,21.52,0.000723072
+"25","1","forested","diptera_chironomidae_f",2021-11-18,7,10.76,0.0792634770413889
+"26","1","forested","diptera_chironomidae_f",2021-11-18,2,129.12,0.0295927879901011
+"27","1","forested","diptera_chironomidae_f",2021-11-18,4,107.6,0.168212290567013
+"28","1","forested","diptera_chironomidae_f",2021-11-18,3,32.28,0.0227456671201207
+"29","1","forested","diptera_chironomidae_f",2021-11-18,5,21.52,0.0624206743818594
+"30","1","forested","diptera_chironomidae_f",2022-01-13,9,21.52,0.318004521903668
+"31","1","forested","diptera_chironomidae_f",2022-01-13,6,10.76,0.0517166651284109
+"32","1","forested","diptera_chironomidae_f",2022-03-04,2,32.28,0.00739819699752528
+"33","1","forested","diptera_chironomidae_f",2022-03-04,5,53.8,0.156051685954648
+"34","1","forested","diptera_chironomidae_f",2022-03-04,6,43.04,0.206866660513644
+"35","1","forested","diptera_chironomidae_f",2022-03-04,4,21.52,0.0336424581134026
+"36","1","forested","diptera_chironomidae_f",2022-03-21,8,10.76,0.114738934529316
+"37","1","forested","diptera_chironomidae_f",2022-03-21,3,10.76,0.00758188904004024
+"38","1","forested","diptera_chironomidae_f",2022-03-21,5,32.28,0.0936310115727891
+"39","1","forested","diptera_chironomidae_f",2022-03-21,6,10.76,0.0517166651284109
+"40","1","forested","diptera_chironomidae_f",2022-03-21,4,32.28,0.0504636871701039
+"41","1","forested","diptera_chironomidae_f",2021-06-09,2,10.76,0.00246606566584176
+"42","2","stormwater dominated","diptera_chironomidae_sw",2021-05-24,5,258.24,0.749048092582313
+"43","2","stormwater dominated","diptera_chironomidae_sw",2021-05-24,2,1151.32,0.263869026245068
+"44","2","stormwater dominated","diptera_chironomidae_sw",2021-05-24,7,32.28,0.237790431124167
+"45","2","stormwater dominated","diptera_chironomidae_sw",2021-05-24,3,688.64,0.485240898562575
+"46","2","stormwater dominated","diptera_chironomidae_sw",2021-05-24,4,570.28,0.891525140005169
+"47","2","stormwater dominated","diptera_chironomidae_sw",2021-05-24,1,247.48,0.008315328
+"48","2","stormwater dominated","diptera_chironomidae_sw",2021-05-24,0,21.52,0
+"49","2","stormwater dominated","diptera_chironomidae_sw",2021-05-24,6,129.12,0.620599981540931
+"50","2","stormwater dominated","diptera_chironomidae_sw",2021-05-24,8,21.52,0.229477869058632
+"51","2","stormwater dominated","diptera_chironomidae_sw",2021-06-09,1,32.28,0.001084608
+"52","2","stormwater dominated","diptera_chironomidae_sw",2021-06-09,2,129.12,0.0295927879901011
+"53","2","stormwater dominated","diptera_chironomidae_sw",2021-06-09,4,161.4,0.25231843585052
+"54","2","stormwater dominated","diptera_chironomidae_sw",2021-06-09,3,236.72,0.166801558880885
+"55","2","stormwater dominated","diptera_chironomidae_sw",2021-06-09,5,182.92,0.530575732245805
+"56","2","stormwater dominated","diptera_chironomidae_sw",2021-06-09,6,64.56,0.310299990770466
+"57","2","stormwater dominated","diptera_chironomidae_sw",2021-07-01,2,32.28,0.00739819699752528
+"58","2","stormwater dominated","diptera_chironomidae_sw",2021-07-01,3,21.52,0.0151637780800805
+"59","2","stormwater dominated","diptera_chironomidae_sw",2021-07-01,4,10.76,0.0168212290567013
+"60","2","stormwater dominated","diptera_chironomidae_sw",2021-08-13,3,742.44,0.523150343762777
+"61","2","stormwater dominated","diptera_chironomidae_sw",2021-08-13,1,193.68,0.006507648
+"62","2","stormwater dominated","diptera_chironomidae_sw",2021-08-13,2,710.16,0.162760333945556
+"63","2","stormwater dominated","diptera_chironomidae_sw",2021-08-13,4,269,0.420530726417533
+"64","2","stormwater dominated","diptera_chironomidae_sw",2021-08-13,6,53.8,0.258583325642055
+"65","2","stormwater dominated","diptera_chironomidae_sw",2021-08-13,5,53.8,0.156051685954648
+"66","2","stormwater dominated","diptera_chironomidae_sw",2021-09-07,5,32.28,0.0936310115727891
+"67","2","stormwater dominated","diptera_chironomidae_sw",2021-09-07,4,118.36,0.185033519623714
+"68","2","stormwater dominated","diptera_chironomidae_sw",2021-09-07,3,129.12,0.0909826684804829
+"69","2","stormwater dominated","diptera_chironomidae_sw",2021-09-07,2,473.44,0.108506889297037
+"70","2","stormwater dominated","diptera_chironomidae_sw",2021-09-07,0,32.28,0
+"71","2","stormwater dominated","diptera_chironomidae_sw",2021-09-07,1,118.36,0.003976896
+"72","2","stormwater dominated","diptera_chironomidae_sw",2021-09-07,6,21.52,0.103433330256822
+"73","2","stormwater dominated","diptera_chironomidae_sw",2021-10-14,4,161.4,0.25231843585052
+"74","2","stormwater dominated","diptera_chironomidae_sw",2021-10-14,3,225.96,0.159219669840845
+"75","2","stormwater dominated","diptera_chironomidae_sw",2021-10-14,5,129.12,0.374524046291156
+"76","2","stormwater dominated","diptera_chironomidae_sw",2021-10-14,2,215.2,0.0493213133168352
+"77","2","stormwater dominated","diptera_chironomidae_sw",2021-10-14,1,21.52,0.000723072
+"78","2","stormwater dominated","diptera_chironomidae_sw",2021-10-14,6,21.52,0.103433330256822
+"79","2","stormwater dominated","diptera_chironomidae_sw",2021-10-14,7,10.76,0.0792634770413889
+"80","2","stormwater dominated","diptera_chironomidae_sw",2021-11-18,2,172.16,0.0394570506534682
+"81","2","stormwater dominated","diptera_chironomidae_sw",2021-11-18,7,21.52,0.158526954082778
+"82","2","stormwater dominated","diptera_chironomidae_sw",2021-11-18,4,43.04,0.0672849162268052
+"83","2","stormwater dominated","diptera_chironomidae_sw",2021-11-18,5,43.04,0.124841348763719
+"84","2","stormwater dominated","diptera_chironomidae_sw",2021-11-18,3,32.28,0.0227456671201207
+"85","2","stormwater dominated","diptera_chironomidae_sw",2021-11-18,1,21.52,0.000723072
+"86","2","stormwater dominated","diptera_chironomidae_sw",2021-11-18,6,10.76,0.0517166651284109
+"87","2","stormwater dominated","diptera_chironomidae_sw",2022-01-13,3,10.76,0.00758188904004024
+"88","2","stormwater dominated","diptera_chironomidae_sw",2022-01-13,4,10.76,0.0168212290567013
+"89","2","stormwater dominated","diptera_chironomidae_sw",2022-03-04,2,43.04,0.00986426266336704
+"90","2","stormwater dominated","diptera_chironomidae_sw",2022-03-04,6,32.28,0.155149995385233
+"91","2","stormwater dominated","diptera_chironomidae_sw",2022-03-04,4,75.32,0.117748603396909
+"92","2","stormwater dominated","diptera_chironomidae_sw",2022-03-04,3,21.52,0.0151637780800805
+"93","3","wastewater dominated","diptera_chironomidae_ww",2021-05-24,3,1119.04,0.788516460164185
+"94","3","wastewater dominated","diptera_chironomidae_ww",2021-05-24,5,462.68,1.34204449920998
+"95","3","wastewater dominated","diptera_chironomidae_ww",2021-05-24,1,473.44,0.015907584
+"96","3","wastewater dominated","diptera_chironomidae_ww",2021-05-24,2,2453.28,0.562262971811921
+"97","3","wastewater dominated","diptera_chironomidae_ww",2021-05-24,4,1301.96,2.03536871586086
+"98","3","wastewater dominated","diptera_chironomidae_ww",2021-05-24,0,32.28,0
+"99","3","wastewater dominated","diptera_chironomidae_ww",2021-05-24,6,96.84,0.465449986155699
+"100","3","wastewater dominated","diptera_chironomidae_ww",2021-05-24,7,32.28,0.237790431124167
+"101","3","wastewater dominated","diptera_chironomidae_ww",2021-05-24,8,10.76,0.114738934529316
+"102","3","wastewater dominated","diptera_chironomidae_ww",2021-06-09,5,64.56,0.187262023145578
+"103","3","wastewater dominated","diptera_chironomidae_ww",2021-06-09,3,96.84,0.0682370013603622
+"104","3","wastewater dominated","diptera_chironomidae_ww",2021-06-09,7,32.28,0.237790431124167
+"105","3","wastewater dominated","diptera_chironomidae_ww",2021-07-01,3,32.28,0.0227456671201207
+"106","3","wastewater dominated","diptera_chironomidae_ww",2021-07-01,4,21.52,0.0336424581134026
+"107","3","wastewater dominated","diptera_chironomidae_ww",2021-07-01,2,10.76,0.00246606566584176
+"108","3","wastewater dominated","diptera_chironomidae_ww",2021-07-01,6,10.76,0.0517166651284109
+"109","3","wastewater dominated","diptera_chironomidae_ww",2021-09-07,3,161.4,0.113728335600604
+"110","3","wastewater dominated","diptera_chironomidae_ww",2021-09-07,4,64.56,0.100927374340208
+"111","3","wastewater dominated","diptera_chironomidae_ww",2021-09-07,2,139.88,0.0320588536559429
+"112","3","wastewater dominated","diptera_chironomidae_ww",2021-09-07,6,43.04,0.206866660513644
+"113","3","wastewater dominated","diptera_chironomidae_ww",2021-09-07,5,53.8,0.156051685954648
+"114","3","wastewater dominated","diptera_chironomidae_ww",2021-10-14,4,21.52,0.0336424581134026
+"115","3","wastewater dominated","diptera_chironomidae_ww",2021-10-14,3,21.52,0.0151637780800805
+"116","3","wastewater dominated","diptera_chironomidae_ww",2021-10-14,2,32.28,0.00739819699752528
+"117","3","wastewater dominated","diptera_chironomidae_ww",2021-11-18,6,43.04,0.206866660513644
+"118","3","wastewater dominated","diptera_chironomidae_ww",2021-11-18,4,150.64,0.235497206793818
+"119","3","wastewater dominated","diptera_chironomidae_ww",2021-11-18,1,75.32,0.002530752
+"120","3","wastewater dominated","diptera_chironomidae_ww",2021-11-18,3,193.68,0.136474002720724
+"121","3","wastewater dominated","diptera_chironomidae_ww",2021-11-18,2,279.76,0.0641177073118858
+"122","3","wastewater dominated","diptera_chironomidae_ww",2021-11-18,5,86.08,0.249682697527438
+"123","3","wastewater dominated","diptera_chironomidae_ww",2022-03-04,3,43.04,0.030327556160161
+"124","3","wastewater dominated","diptera_chironomidae_ww",2022-03-04,4,258.24,0.403709497360831
+"125","3","wastewater dominated","diptera_chironomidae_ww",2022-03-04,2,53.8,0.0123303283292088
+"126","3","wastewater dominated","diptera_chironomidae_ww",2022-03-04,6,86.08,0.413733321027288
+"127","3","wastewater dominated","diptera_chironomidae_ww",2022-03-04,5,32.28,0.0936310115727891
+"128","3","wastewater dominated","diptera_chironomidae_ww",2022-03-04,1,21.52,0.000723072
+"129","3","wastewater dominated","diptera_chironomidae_ww",2022-03-04,7,10.76,0.0792634770413889
+"130","3","wastewater dominated","diptera_chironomidae_ww",2021-08-13,6,10.76,0.0517166651284109
+"131","3","wastewater dominated","diptera_chironomidae_ww",2021-08-13,3,10.76,0.00758188904004024
+"132","1","wastewater dominated","coleoptera_elmidae",2021-09-07,1,10.76,0.00024748
+"133","1","wastewater dominated","coleoptera_elmidae",2021-11-18,2,43.04,0.0113638819463829
+"134","1","wastewater dominated","coleoptera_elmidae",2021-11-18,3,10.76,0.0118436085603939
+"135","1","wastewater dominated","coleoptera_elmidae",2021-11-18,5,10.76,0.0715506350347301
+"136","1","stormwater dominated","coleoptera_elmidae",2021-09-07,5,10.76,0.0715506350347301
+"137","1","stormwater dominated","coleoptera_elmidae",2021-11-18,6,10.76,0.13595984473441
+"138","1","stormwater dominated","coleoptera_elmidae",2021-11-18,5,10.76,0.0715506350347301
+"139","1","stormwater dominated","coleoptera_elmidae",2021-11-18,4,10.76,0.0326131942205754
+"140","1","stormwater dominated","coleoptera_elmidae",2021-11-18,3,10.76,0.0118436085603939
+"141","1","stormwater dominated","coleoptera_elmidae",2021-11-18,2,10.76,0.00284097048659574
+"142","1","stormwater dominated","coleoptera_elmidae",2022-01-13,4,10.76,0.0326131942205754
+"143","1","forested","coleoptera_elmidae",2021-05-24,8,10.76,0.374386302950822
+"144","1","forested","coleoptera_elmidae",2021-09-07,2,21.52,0.00568194097319147
+"145","1","forested","coleoptera_elmidae",2021-09-07,4,10.76,0.0326131942205754
+"146","1","forested","coleoptera_elmidae",2021-09-07,3,10.76,0.0118436085603939
+"147","1","forested","coleoptera_elmidae",2021-10-14,8,21.52,0.748772605901644
+"148","1","forested","coleoptera_elmidae",2021-10-14,2,32.28,0.00852291145978721
+"149","1","forested","coleoptera_elmidae",2021-10-14,7,10.76,0.233953909148171
+"150","1","forested","coleoptera_elmidae",2021-10-14,4,10.76,0.0326131942205754
+"151","1","forested","coleoptera_elmidae",2021-11-18,2,10.76,0.00284097048659574
+"152","1","forested","coleoptera_elmidae",2021-11-18,8,10.76,0.374386302950822
+"153","1","forested","coleoptera_elmidae",2021-11-18,4,10.76,0.0326131942205754
+"154","1","forested","coleoptera_elmidae",2021-11-18,6,10.76,0.13595984473441
+"155","1","forested","coleoptera_elmidae",2022-01-13,5,32.28,0.21465190510419
+"156","1","forested","coleoptera_elmidae",2022-01-13,6,32.28,0.40787953420323
+"157","1","forested","coleoptera_elmidae",2022-01-13,3,32.28,0.0355308256811818
+"158","1","forested","coleoptera_elmidae",2022-01-13,2,53.8,0.0142048524329787
+"159","1","forested","coleoptera_elmidae",2022-01-13,4,21.52,0.0652263884411509
+"160","1","forested","coleoptera_elmidae",2022-01-13,7,10.76,0.233953909148171
+"161","1","forested","coleoptera_elmidae",2022-03-04,7,10.76,0.233953909148171
+"162","1","forested","coleoptera_elmidae",2022-03-04,4,53.8,0.163065971102877
+"163","1","forested","coleoptera_elmidae",2022-03-04,3,21.52,0.0236872171207879
+"164","1","forested","coleoptera_elmidae",2022-03-04,2,21.52,0.00568194097319147
+"165","1","forested","coleoptera_elmidae",2022-03-04,5,21.52,0.14310127006946
+"166","1","forested","coleoptera_elmidae",2022-03-21,5,10.76,0.0715506350347301
+"167","1","forested","coleoptera_elmidae",2022-03-21,6,10.76,0.13595984473441
+"168","1","forested","coleoptera_elmidae",2021-10-14,5,10.76,0.0715506350347301
+"169","2","forested","coleoptera_psephenidae",2021-09-07,1,32.28,0.002382264
+"170","2","forested","coleoptera_psephenidae",2021-09-07,2,10.76,0.00595198462323225
+"171","2","forested","coleoptera_psephenidae",2021-09-07,3,10.76,0.0193367284941637
+"172","2","forested","coleoptera_psephenidae",2022-01-13,6,21.52,0.289871930216497
+"173","2","forested","coleoptera_psephenidae",2021-09-07,4,10.76,0.0446123363596895
+"174","2","forested","coleoptera_psephenidae",2022-03-04,2,21.52,0.0119039692464645
+"175","2","forested","coleoptera_psephenidae",2022-03-04,7,10.76,0.226842036435035
+"176","2","forested","coleoptera_psephenidae",2022-03-04,6,10.76,0.144935965108249
+"177","3","wastewater dominated","diptera_empididae",2021-05-24,4,10.76,0.00622258257408319
+"178","3","stormwater dominated","diptera_empididae",2021-05-24,5,10.76,0.0111953537947071
+"179","3","stormwater dominated","diptera_empididae",2021-09-07,2,32.28,0.00301148687394399
+"180","3","stormwater dominated","diptera_empididae",2021-09-07,4,10.76,0.00622258257408319
+"181","3","stormwater dominated","diptera_empididae",2021-09-07,5,10.76,0.0111953537947071
+"182","3","forested","diptera_empididae",2022-03-04,4,10.76,0.00622258257408319
+"183","4","forested","diptera_limoniidae",2021-05-24,5,10.76,0.0140855783087086
+"184","4","forested","diptera_limoniidae",2021-05-24,7,10.76,0.0383657747504433
+"185","4","forested","diptera_limoniidae",2021-07-01,4,21.52,0.0144946141676488
+"186","4","forested","diptera_limoniidae",2021-07-01,5,21.52,0.0281711566174171
+"187","4","forested","diptera_limoniidae",2021-07-01,7,10.76,0.0383657747504433
+"188","4","forested","diptera_limoniidae",2021-07-01,6,10.76,0.0242424457914683
+"189","4","forested","diptera_limoniidae",2021-07-01,3,10.76,0.00307686970735271
+"190","4","stormwater dominated","diptera_limoniidae",2021-09-07,4,21.52,0.0144946141676488
+"191","4","stormwater dominated","diptera_limoniidae",2021-09-07,5,10.76,0.0140855783087086
+"192","4","forested","diptera_limoniidae",2021-09-07,2,10.76,0.000919833741938272
+"193","4","forested","diptera_limoniidae",2021-09-07,6,10.76,0.0242424457914683
+"194","5","wastewater dominated","diptera_simuliidae",2021-05-24,1,10.76,0.000340016
+"195","5","wastewater dominated","diptera_simuliidae",2021-05-24,0,10.76,0
+"196","5","wastewater dominated","diptera_simuliidae",2021-05-24,2,10.76,0.00237952653299374
+"197","5","forested","diptera_simuliidae",2021-05-24,3,43.04,0.0297056258893972
+"198","5","forested","diptera_simuliidae",2021-05-24,2,118.36,0.0261747918629312
+"199","5","forested","diptera_simuliidae",2021-05-24,1,21.52,0.000680032
+"200","5","forested","diptera_simuliidae",2021-05-24,4,21.52,0.0333051769400335
+"201","5","wastewater dominated","diptera_simuliidae",2021-11-18,2,10.76,0.00237952653299374
+"202","5","wastewater dominated","diptera_simuliidae",2021-11-18,4,10.76,0.0166525884700168
+"203","5","forested","diptera_simuliidae",2021-11-18,2,21.52,0.00475905306598749
+"204","5","forested","diptera_simuliidae",2022-01-13,5,10.76,0.0311535940237328
+"205","5","forested","diptera_simuliidae",2022-03-04,5,10.76,0.0311535940237328
+"206","5","forested","diptera_simuliidae",2021-10-14,2,10.76,0.00237952653299374
+"207","6","forested","diptera_tipulidae",2021-09-07,10,10.76,0.0528176707441572
+"208","6","forested","diptera_tipulidae",2022-03-21,19,10.76,0.295137792170759
+"209","6","forested","diptera_tipulidae",2021-10-14,5,21.52,0.0164758589466426
+"210","7","wastewater dominated","ephemeroptera_baetidae",2021-10-14,5,10.76,0.0304614256543723
+"211","7","forested","ephemeroptera_baetidae",2021-05-24,5,32.28,0.091384276963117
+"212","7","forested","ephemeroptera_baetidae",2021-05-24,2,107.6,0.025875792626931
+"213","7","forested","ephemeroptera_baetidae",2021-05-24,1,10.76,0.0004007024
+"214","7","stormwater dominated","ephemeroptera_baetidae",2021-05-24,2,96.84,0.0232882133642379
+"215","7","stormwater dominated","ephemeroptera_baetidae",2021-05-24,4,53.8,0.0835478704484848
+"216","7","stormwater dominated","ephemeroptera_baetidae",2021-05-24,5,21.52,0.0609228513087446
+"217","7","stormwater dominated","ephemeroptera_baetidae",2021-05-24,3,53.8,0.0385234562646108
+"218","7","forested","ephemeroptera_baetidae",2021-05-24,4,53.8,0.0835478704484848
+"219","7","stormwater dominated","ephemeroptera_baetidae",2021-05-24,1,32.28,0.0012021072
+"220","7","forested","ephemeroptera_baetidae",2021-06-09,2,43.04,0.0103503170507724
+"221","7","forested","ephemeroptera_baetidae",2021-06-09,4,53.8,0.0835478704484848
+"222","7","forested","ephemeroptera_baetidae",2021-06-09,3,43.04,0.0308187650116886
+"223","7","wastewater dominated","ephemeroptera_baetidae",2021-07-01,4,10.76,0.016709574089697
+"224","7","stormwater dominated","ephemeroptera_baetidae",2021-07-01,4,21.52,0.0334191481793939
+"225","7","wastewater dominated","ephemeroptera_baetidae",2021-09-07,5,10.76,0.0304614256543723
+"226","7","wastewater dominated","ephemeroptera_baetidae",2021-09-07,2,21.52,0.00517515852538621
+"227","7","wastewater dominated","ephemeroptera_baetidae",2021-09-07,3,10.76,0.00770469125292216
+"228","7","forested","ephemeroptera_baetidae",2021-09-07,2,21.52,0.00517515852538621
+"229","7","forested","ephemeroptera_baetidae",2021-09-07,3,10.76,0.00770469125292216
+"230","7","forested","ephemeroptera_baetidae",2021-09-07,5,10.76,0.0304614256543723
+"231","7","stormwater dominated","ephemeroptera_baetidae",2021-10-14,3,10.76,0.00770469125292216
+"232","7","forested","ephemeroptera_baetidae",2021-10-14,2,10.76,0.0025875792626931
+"233","7","wastewater dominated","ephemeroptera_baetidae",2021-11-18,6,53.8,0.248769402323449
+"234","7","wastewater dominated","ephemeroptera_baetidae",2021-11-18,5,107.6,0.304614256543723
+"235","7","wastewater dominated","ephemeroptera_baetidae",2021-11-18,4,118.36,0.183805314986667
+"236","7","wastewater dominated","ephemeroptera_baetidae",2021-11-18,3,21.52,0.0154093825058443
+"237","7","wastewater dominated","ephemeroptera_baetidae",2021-11-18,2,32.28,0.00776273778807931
+"238","7","wastewater dominated","ephemeroptera_baetidae",2021-11-18,1,10.76,0.0004007024
+"239","7","stormwater dominated","ephemeroptera_baetidae",2022-03-21,5,10.76,0.0304614256543723
+"240","7","stormwater dominated","ephemeroptera_baetidae",2021-06-09,4,10.76,0.016709574089697
+"241","7","stormwater dominated","ephemeroptera_baetidae",2021-06-09,3,21.52,0.0154093825058443
+"242","7","forested","ephemeroptera_baetidae",2021-05-24,6,21.52,0.0995077609293797
+"243","7","forested","ephemeroptera_baetidae",2021-05-24,3,86.08,0.0616375300233773
+"244","7","wastewater dominated","ephemeroptera_baetidae",2021-05-24,4,150.64,0.233934037255758
+"245","7","wastewater dominated","ephemeroptera_baetidae",2021-05-24,2,86.08,0.0207006341015448
+"246","7","wastewater dominated","ephemeroptera_baetidae",2021-05-24,3,118.36,0.0847516037821437
+"247","7","wastewater dominated","ephemeroptera_baetidae",2021-05-24,1,21.52,0.0008014048
+"248","7","wastewater dominated","ephemeroptera_baetidae",2021-05-24,5,10.76,0.0304614256543723
+"249","8","forested","ephemeroptera_ephemerellidae",2022-01-13,5,10.76,0.0587207291135016
+"250","9","forested","ephemeroptera_heptageniidae",2021-05-24,5,32.28,0.0788724119532519
+"251","9","forested","ephemeroptera_heptageniidae",2021-05-24,6,32.28,0.128076088387225
+"252","9","forested","ephemeroptera_heptageniidae",2021-05-24,8,10.76,0.091740034920579
+"253","9","forested","ephemeroptera_heptageniidae",2021-05-24,4,43.04,0.0581005353340848
+"254","9","forested","ephemeroptera_heptageniidae",2021-05-24,7,43.04,0.257287273911892
+"255","9","forested","ephemeroptera_heptageniidae",2021-05-24,2,21.52,0.004599508013363
+"256","9","forested","ephemeroptera_heptageniidae",2021-10-14,2,215.2,0.04599508013363
+"257","9","forested","ephemeroptera_heptageniidae",2021-06-09,3,75.32,0.0473157885182914
+"258","9","forested","ephemeroptera_heptageniidae",2021-06-09,4,96.84,0.130726204501691
+"259","9","forested","ephemeroptera_heptageniidae",2021-06-09,6,43.04,0.170768117849634
+"260","9","forested","ephemeroptera_heptageniidae",2021-06-09,5,32.28,0.0788724119532519
+"261","9","forested","ephemeroptera_heptageniidae",2021-06-09,7,32.28,0.192965455433919
+"262","9","forested","ephemeroptera_heptageniidae",2021-07-01,8,10.76,0.091740034920579
+"263","9","forested","ephemeroptera_heptageniidae",2021-07-01,7,10.76,0.0643218184779731
+"264","9","forested","ephemeroptera_heptageniidae",2021-07-01,6,53.8,0.213460147312042
+"265","9","forested","ephemeroptera_heptageniidae",2021-07-01,5,10.76,0.0262908039844173
+"266","9","forested","ephemeroptera_heptageniidae",2021-08-13,5,21.52,0.0525816079688346
+"267","9","forested","ephemeroptera_heptageniidae",2021-08-13,4,32.28,0.0435754015005636
+"268","9","forested","ephemeroptera_heptageniidae",2021-08-13,3,10.76,0.00675939835975592
+"269","9","forested","ephemeroptera_heptageniidae",2021-08-13,6,10.76,0.0426920294624084
+"270","9","forested","ephemeroptera_heptageniidae",2021-09-07,2,32.28,0.0068992620200445
+"271","9","forested","ephemeroptera_heptageniidae",2021-09-07,5,75.32,0.184035627890921
+"272","9","forested","ephemeroptera_heptageniidae",2021-09-07,4,107.6,0.145251338335212
+"273","9","forested","ephemeroptera_heptageniidae",2021-09-07,3,53.8,0.0337969917987796
+"274","9","forested","ephemeroptera_heptageniidae",2021-09-07,6,21.52,0.0853840589248168
+"275","9","forested","ephemeroptera_heptageniidae",2021-09-07,7,10.76,0.0643218184779731
+"276","9","forested","ephemeroptera_heptageniidae",2021-10-14,3,258.24,0.162225560634142
+"277","9","forested","ephemeroptera_heptageniidae",2021-10-14,4,182.92,0.24692727516986
+"278","9","forested","ephemeroptera_heptageniidae",2021-10-14,5,43.04,0.105163215937669
+"279","9","forested","ephemeroptera_heptageniidae",2021-11-18,5,53.8,0.131454019922086
+"280","9","forested","ephemeroptera_heptageniidae",2021-11-18,4,75.32,0.101675936834648
+"281","9","forested","ephemeroptera_heptageniidae",2021-11-18,2,86.08,0.018398032053452
+"282","9","forested","ephemeroptera_heptageniidae",2021-11-18,6,21.52,0.0853840589248168
+"283","9","forested","ephemeroptera_heptageniidae",2021-11-18,7,21.52,0.128643636955946
+"284","9","forested","ephemeroptera_heptageniidae",2021-11-18,3,75.32,0.0473157885182914
+"285","9","forested","ephemeroptera_heptageniidae",2021-11-18,8,21.52,0.183480069841158
+"286","9","forested","ephemeroptera_heptageniidae",2022-01-13,3,10.76,0.00675939835975592
+"287","9","forested","ephemeroptera_heptageniidae",2022-03-04,12,10.76,0.269640770171291
+"288","9","forested","ephemeroptera_heptageniidae",2022-03-04,3,10.76,0.00675939835975592
+"289","9","forested","ephemeroptera_heptageniidae",2021-06-09,2,10.76,0.0022997540066815
+"290","9","forested","ephemeroptera_heptageniidae",2022-01-13,8,10.76,0.091740034920579
+"291","10","forested","ephemeroptera_isonychiidae",2021-05-24,2,21.52,0.00749952939597305
+"292","10","forested","ephemeroptera_isonychiidae",2021-05-24,3,10.76,0.0117647138021584
+"293","10","forested","ephemeroptera_isonychiidae",2021-05-24,4,32.28,0.079438284823143
+"294","10","forested","ephemeroptera_isonychiidae",2021-05-24,5,21.52,0.0993630322223354
+"295","10","forested","ephemeroptera_isonychiidae",2021-05-24,14,10.76,0.906109093590936
+"296","10","forested","ephemeroptera_isonychiidae",2021-07-01,5,10.76,0.0496815161111677
+"297","10","forested","ephemeroptera_isonychiidae",2021-07-01,7,10.76,0.128314548806144
+"298","10","forested","ephemeroptera_isonychiidae",2021-07-01,8,10.76,0.186987765422877
+"299","10","forested","ephemeroptera_isonychiidae",2021-09-07,3,43.04,0.0470588552086337
+"300","10","forested","ephemeroptera_isonychiidae",2021-09-07,7,21.52,0.256629097612289
+"301","10","forested","ephemeroptera_isonychiidae",2021-09-07,6,64.56,0.498467909936029
+"302","10","forested","ephemeroptera_isonychiidae",2021-09-07,4,32.28,0.079438284823143
+"303","10","forested","ephemeroptera_isonychiidae",2021-09-07,5,32.28,0.149044548333503
+"304","10","forested","ephemeroptera_isonychiidae",2021-09-07,8,32.28,0.560963296268631
+"305","10","forested","ephemeroptera_isonychiidae",2021-09-07,2,10.76,0.00374976469798652
+"306","10","forested","ephemeroptera_isonychiidae",2021-09-07,9,10.76,0.260653346377813
+"307","10","forested","ephemeroptera_isonychiidae",2021-10-14,2,107.6,0.0374976469798652
+"308","10","forested","ephemeroptera_isonychiidae",2021-10-14,4,96.84,0.238314854469429
+"309","10","forested","ephemeroptera_isonychiidae",2021-10-14,3,150.64,0.164705993230218
+"310","10","forested","ephemeroptera_isonychiidae",2021-10-14,5,32.28,0.149044548333503
+"311","10","forested","ephemeroptera_isonychiidae",2021-10-14,6,43.04,0.332311939957353
+"312","10","forested","ephemeroptera_isonychiidae",2021-11-18,4,75.32,0.185355997920667
+"313","10","forested","ephemeroptera_isonychiidae",2021-11-18,3,64.56,0.0705882828129506
+"314","10","forested","ephemeroptera_isonychiidae",2021-11-18,8,21.52,0.373975530845754
+"315","10","forested","ephemeroptera_isonychiidae",2021-11-18,6,32.28,0.249233954968015
+"316","10","forested","ephemeroptera_isonychiidae",2021-11-18,7,10.76,0.128314548806144
+"317","10","forested","ephemeroptera_isonychiidae",2021-11-18,2,10.76,0.00374976469798652
+"318","10","forested","ephemeroptera_isonychiidae",2021-06-09,8,10.76,0.186987765422877
+"319","10","forested","ephemeroptera_isonychiidae",2021-06-09,6,10.76,0.0830779849893382
+"320","10","forested","ephemeroptera_isonychiidae",2021-06-09,4,21.52,0.052958856548762
+"321","11","wastewater dominated","ephemeroptera_leptohyphidae",2021-05-24,2,10.76,0.00201275717994326
+"322","11","wastewater dominated","ephemeroptera_leptohyphidae",2021-05-24,3,10.76,0.00670005023460427
+"323","11","wastewater dominated","ephemeroptera_leptohyphidae",2021-07-01,5,10.76,0.0304846666422839
+"324","11","wastewater dominated","ephemeroptera_leptohyphidae",2021-09-07,2,64.56,0.0120765430796596
+"325","11","wastewater dominated","ephemeroptera_leptohyphidae",2021-09-07,4,21.52,0.0314540336700887
+"326","11","wastewater dominated","ephemeroptera_leptohyphidae",2021-09-07,3,21.52,0.0134001004692085
+"327","11","wastewater dominated","ephemeroptera_leptohyphidae",2021-11-18,4,21.52,0.0314540336700887
+"328","11","wastewater dominated","ephemeroptera_leptohyphidae",2021-11-18,2,10.76,0.00201275717994326
+"329","12","forested","megaloptera_corydalidae",2021-09-07,10,10.76,0.25013590488467
+"330","12","forested","megaloptera_corydalidae",2021-09-07,16,21.52,1.98745900935029
+"331","12","forested","megaloptera_corydalidae",2021-09-07,18,10.76,1.40410904813447
+"332","12","forested","megaloptera_corydalidae",2021-09-07,12,10.76,0.427142704035318
+"333","12","forested","megaloptera_corydalidae",2021-10-14,17,21.52,2.37450788129105
+"334","12","forested","megaloptera_corydalidae",2021-10-14,18,10.76,1.40410904813447
+"335","12","forested","megaloptera_corydalidae",2021-11-18,17,10.76,1.18725394064552
+"336","13","forested","odonata_coenagrionidae",2021-08-13,3,10.76,0.0110843840428243
+"337","13","forested","odonata_coenagrionidae",2021-08-13,8,10.76,0.270187813464991
+"338","13","forested","odonata_coenagrionidae",2021-09-07,5,10.76,0.0584858886673868
+"339","14","forested","odonata_gomphidae",2022-01-13,4,21.52,0.0554502111385758
+"340","14","forested","odonata_gomphidae",2021-08-13,11,10.76,0.48109488309467
+"341","14","forested","odonata_gomphidae",2021-09-07,14,10.76,0.949924658952293
+"342","14","forested","odonata_gomphidae",2021-11-18,4,43.04,0.110900422277152
+"343","14","wastewater dominated","odonata_gomphidae",2021-08-13,4,10.76,0.0277251055692879
+"344","15","stormwater dominated","oligochaeta_unknown",2021-08-13,10,10.76,0.00162260025557806
+"345","15","wastewater dominated","oligochaeta_unknown",2021-05-24,0,64.56,0
+"346","15","wastewater dominated","oligochaeta_unknown",2021-05-24,1,258.24,0.0034707456
+"347","15","wastewater dominated","oligochaeta_unknown",2021-05-24,2,172.16,0.00479085490567573
+"348","15","wastewater dominated","oligochaeta_unknown",2021-05-24,19,10.76,0.00318348509646793
+"349","15","stormwater dominated","oligochaeta_unknown",2021-10-14,12,10.76,0.00196495155902936
+"350","15","stormwater dominated","oligochaeta_unknown",2021-05-24,5,10.76,0.000783664267092793
+"351","15","stormwater dominated","oligochaeta_unknown",2021-05-24,7,10.76,0.00111574379960183
+"352","15","stormwater dominated","oligochaeta_unknown",2021-05-24,1,32.28,0.0004338432
+"353","15","stormwater dominated","oligochaeta_unknown",2021-05-24,2,10.76,0.000299428431604733
+"354","15","forested","oligochaeta_unknown",2021-05-24,17,10.76,0.0028325847162023
+"355","15","forested","oligochaeta_unknown",2021-05-24,14,10.76,0.00231018083944257
+"356","15","wastewater dominated","oligochaeta_unknown",2021-07-01,7,10.76,0.00111574379960183
+"357","15","wastewater dominated","oligochaeta_unknown",2021-07-01,6,10.76,0.000949009047721985
+"358","15","wastewater dominated","oligochaeta_unknown",2021-07-01,10,10.76,0.00162260025557806
+"359","15","forested","oligochaeta_unknown",2021-07-01,68,10.76,0.0121435565168461
+"360","15","wastewater dominated","oligochaeta_unknown",2021-09-07,0,32.28,0
+"361","15","wastewater dominated","oligochaeta_unknown",2021-09-07,4,10.76,0.000619975504882434
+"362","15","wastewater dominated","oligochaeta_unknown",2021-09-07,2,21.52,0.000598856863209466
+"363","15","wastewater dominated","oligochaeta_unknown",2021-09-07,3,10.76,0.000458341157836519
+"364","15","stormwater dominated","oligochaeta_unknown",2021-09-07,5,10.76,0.000783664267092793
+"365","15","stormwater dominated","oligochaeta_unknown",2021-09-07,2,21.52,0.000598856863209466
+"366","15","stormwater dominated","oligochaeta_unknown",2021-09-07,3,10.76,0.000458341157836519
+"367","15","stormwater dominated","oligochaeta_unknown",2021-09-07,55,10.76,0.00971834615507511
+"368","15","stormwater dominated","oligochaeta_unknown",2021-09-07,0,10.76,0
+"369","15","forested","oligochaeta_unknown",2021-09-07,22,10.76,0.00371325996245974
+"370","15","forested","oligochaeta_unknown",2021-09-07,10,21.52,0.00324520051115612
+"371","15","forested","oligochaeta_unknown",2021-09-07,7,10.76,0.00111574379960183
+"372","15","forested","oligochaeta_unknown",2021-09-07,13,21.52,0.00427446785697902
+"373","15","forested","oligochaeta_unknown",2021-09-07,12,10.76,0.00196495155902936
+"374","15","stormwater dominated","oligochaeta_unknown",2021-06-09,7,32.28,0.0033472313988055
+"375","15","forested","oligochaeta_unknown",2021-06-09,40,32.28,0.020868718730798
+"376","15","forested","oligochaeta_unknown",2021-06-09,36,32.28,0.0186831637649817
+"377","15","forested","oligochaeta_unknown",2021-06-09,21,32.28,0.0106087216409657
+"378","15","forested","oligochaeta_unknown",2021-06-09,45,64.56,0.0472319558548863
+"379","15","forested","oligochaeta_unknown",2021-06-09,30,129.12,0.0617120684950444
+"380","15","forested","oligochaeta_unknown",2021-06-09,20,64.56,0.0201578535601922
+"381","15","forested","oligochaeta_unknown",2021-06-09,25,75.32,0.0297266923945789
+"382","15","forested","oligochaeta_unknown",2021-06-09,26,32.28,0.0132756199212534
+"383","15","forested","oligochaeta_unknown",2021-06-09,15,32.28,0.00745124111155772
+"384","15","forested","oligochaeta_unknown",2021-06-09,17,53.8,0.0141629235810115
+"385","15","forested","oligochaeta_unknown",2021-06-09,10,43.04,0.00649040102231223
+"386","15","forested","oligochaeta_unknown",2021-06-09,7,32.28,0.0033472313988055
+"387","15","forested","oligochaeta_unknown",2021-06-09,5,43.04,0.00313465706837117
+"388","15","stormwater dominated","oligochaeta_unknown",2021-08-13,8,32.28,0.0038510333630738
+"389","15","stormwater dominated","oligochaeta_unknown",2021-10-14,7,21.52,0.00223148759920367
+"390","15","wastewater dominated","oligochaeta_unknown",2021-10-14,54,10.76,0.0095328989147732
+"391","15","stormwater dominated","oligochaeta_unknown",2022-03-21,5,10.76,0.000783664267092793
+"392","15","forested","oligochaeta_unknown",2021-09-07,14,10.76,0.00231018083944257
+"393","15","forested","oligochaeta_unknown",2021-09-07,11,10.76,0.00179338634824099
+"394","15","forested","oligochaeta_unknown",2021-09-07,17,10.76,0.0028325847162023
+"395","15","forested","oligochaeta_unknown",2021-09-07,1,10.76,0.0001446144
+"396","15","forested","oligochaeta_unknown",2021-09-07,38,10.76,0.00659150091189007
+"397","15","forested","oligochaeta_unknown",2021-09-07,2,10.76,0.000299428431604733
+"398","15","forested","oligochaeta_unknown",2021-09-07,30,10.76,0.00514267237458703
+"399","15","forested","oligochaeta_unknown",2021-09-07,15,21.52,0.00496749407437182
+"400","15","wastewater dominated","oligochaeta_unknown",2021-10-14,21,10.76,0.00353624054698856
+"401","15","wastewater dominated","oligochaeta_unknown",2021-10-14,11,10.76,0.00179338634824099
+"402","15","wastewater dominated","oligochaeta_unknown",2021-10-14,14,10.76,0.00231018083944257
+"403","15","wastewater dominated","oligochaeta_unknown",2021-11-18,1,64.56,0.0008676864
+"404","15","wastewater dominated","oligochaeta_unknown",2021-11-18,3,21.52,0.000916682315673038
+"405","15","stormwater dominated","oligochaeta_unknown",2022-03-21,11,10.76,0.00179338634824099
+"406","15","wastewater dominated","oligochaeta_unknown",2021-11-18,15,10.76,0.00248374703718591
+"407","15","wastewater dominated","oligochaeta_unknown",2021-11-18,14,10.76,0.00231018083944257
+"408","15","wastewater dominated","oligochaeta_unknown",2021-11-18,10,21.52,0.00324520051115612
+"409","15","wastewater dominated","oligochaeta_unknown",2021-11-18,4,21.52,0.00123995100976487
+"410","15","wastewater dominated","oligochaeta_unknown",2021-11-18,11,21.52,0.00358677269648198
+"411","15","wastewater dominated","oligochaeta_unknown",2021-11-18,2,21.52,0.000598856863209466
+"412","15","wastewater dominated","oligochaeta_unknown",2021-11-18,0,10.76,0
+"413","15","stormwater dominated","oligochaeta_unknown",2021-11-18,10,75.32,0.0113582017890464
+"414","15","stormwater dominated","oligochaeta_unknown",2021-11-18,4,247.48,0.014259436612296
+"415","15","stormwater dominated","oligochaeta_unknown",2021-11-18,6,225.96,0.0199291900021617
+"416","15","stormwater dominated","oligochaeta_unknown",2021-11-18,5,236.72,0.0172406138760414
+"417","15","stormwater dominated","oligochaeta_unknown",2021-11-18,2,430.4,0.0119771372641893
+"418","15","stormwater dominated","oligochaeta_unknown",2021-11-18,1,161.4,0.002169216
+"419","15","stormwater dominated","oligochaeta_unknown",2021-11-18,9,21.52,0.00290533469650216
+"420","15","stormwater dominated","oligochaeta_unknown",2021-11-18,8,64.56,0.00770206672614759
+"421","15","stormwater dominated","oligochaeta_unknown",2021-11-18,12,53.8,0.00982475779514679
+"422","15","stormwater dominated","oligochaeta_unknown",2021-11-18,3,301.28,0.0128335524194225
+"423","15","stormwater dominated","oligochaeta_unknown",2021-11-18,14,32.28,0.0069305425183277
+"424","15","stormwater dominated","oligochaeta_unknown",2022-03-21,20,10.76,0.00335964226003204
+"425","15","stormwater dominated","oligochaeta_unknown",2022-03-21,7,10.76,0.00111574379960183
+"426","15","stormwater dominated","oligochaeta_unknown",2022-03-21,15,10.76,0.00248374703718591
+"427","15","forested","oligochaeta_unknown",2022-03-21,26,10.76,0.00442520664041781
+"428","15","forested","oligochaeta_unknown",2022-03-21,20,32.28,0.0100789267800961
+"429","15","forested","oligochaeta_unknown",2022-03-21,13,10.76,0.00213723392848951
+"430","15","forested","oligochaeta_unknown",2022-03-21,7,10.76,0.00111574379960183
+"431","15","stormwater dominated","oligochaeta_unknown",2021-11-18,7,96.84,0.0100416941964165
+"432","15","stormwater dominated","oligochaeta_unknown",2021-11-18,15,10.76,0.00248374703718591
+"433","15","stormwater dominated","oligochaeta_unknown",2021-11-18,13,32.28,0.00641170178546854
+"434","15","stormwater dominated","oligochaeta_unknown",2021-11-18,11,10.76,0.00179338634824099
+"435","15","forested","oligochaeta_unknown",2021-11-18,5,10.76,0.000783664267092793
+"436","15","forested","oligochaeta_unknown",2021-11-18,2,21.52,0.000598856863209466
+"437","15","forested","oligochaeta_unknown",2021-11-18,1,43.04,0.0005784576
+"438","15","forested","oligochaeta_unknown",2021-11-18,22,10.76,0.00371325996245974
+"439","15","forested","oligochaeta_unknown",2021-11-18,10,10.76,0.00162260025557806
+"440","15","stormwater dominated","oligochaeta_unknown",2022-01-13,5,10.76,0.000783664267092793
+"441","15","stormwater dominated","oligochaeta_unknown",2022-01-13,7,10.76,0.00111574379960183
+"442","15","forested","oligochaeta_unknown",2022-01-13,8,10.76,0.00128367778769127
+"443","15","forested","oligochaeta_unknown",2022-01-13,17,21.52,0.00566516943240459
+"444","15","forested","oligochaeta_unknown",2022-01-13,10,43.04,0.00649040102231223
+"445","15","forested","oligochaeta_unknown",2022-01-13,16,10.76,0.00265789317422213
+"446","15","forested","oligochaeta_unknown",2022-01-13,9,21.52,0.00290533469650216
+"447","15","forested","oligochaeta_unknown",2022-01-13,14,21.52,0.00462036167888513
+"448","15","forested","oligochaeta_unknown",2022-01-13,30,10.76,0.00514267237458703
+"449","15","forested","oligochaeta_unknown",2022-01-13,18,10.76,0.00300779110330802
+"450","15","forested","oligochaeta_unknown",2022-01-13,15,32.28,0.00745124111155772
+"451","15","forested","oligochaeta_unknown",2022-01-13,13,10.76,0.00213723392848951
+"452","15","forested","oligochaeta_unknown",2022-01-13,25,10.76,0.0042466703420827
+"453","15","forested","oligochaeta_unknown",2022-01-13,12,10.76,0.00196495155902936
+"454","15","forested","oligochaeta_unknown",2022-01-13,3,43.04,0.00183336463134608
+"455","15","forested","oligochaeta_unknown",2022-01-13,2,32.28,0.000898285294814199
+"456","15","forested","oligochaeta_unknown",2022-01-13,20,10.76,0.00335964226003204
+"457","15","forested","oligochaeta_unknown",2022-01-13,6,10.76,0.000949009047721985
+"458","15","forested","oligochaeta_unknown",2022-01-13,11,21.52,0.00358677269648198
+"459","15","forested","oligochaeta_unknown",2022-01-13,4,21.52,0.00123995100976487
+"460","15","forested","oligochaeta_unknown",2022-01-13,19,10.76,0.00318348509646793
+"461","15","wastewater dominated","oligochaeta_unknown",2022-03-04,13,10.76,0.00213723392848951
+"462","15","stormwater dominated","oligochaeta_unknown",2022-03-04,13,10.76,0.00213723392848951
+"463","15","stormwater dominated","oligochaeta_unknown",2022-03-04,5,10.76,0.000783664267092793
+"464","15","stormwater dominated","oligochaeta_unknown",2022-03-04,8,10.76,0.00128367778769127
+"465","15","stormwater dominated","oligochaeta_unknown",2022-03-04,9,10.76,0.00145266734825108
+"466","15","stormwater dominated","oligochaeta_unknown",2022-03-04,3,10.76,0.000458341157836519
+"467","15","stormwater dominated","oligochaeta_unknown",2022-03-04,15,10.76,0.00248374703718591
+"468","15","stormwater dominated","oligochaeta_unknown",2022-03-04,25,10.76,0.0042466703420827
+"469","15","forested","oligochaeta_unknown",2022-03-04,26,10.76,0.00442520664041781
+"470","15","forested","oligochaeta_unknown",2022-03-04,22,10.76,0.00371325996245974
+"471","15","forested","oligochaeta_unknown",2022-03-21,10,10.76,0.00162260025557806
+"472","15","forested","oligochaeta_unknown",2022-03-21,22,10.76,0.00371325996245974
+"473","15","forested","oligochaeta_unknown",2022-03-21,14,10.76,0.00231018083944257
+"474","15","forested","oligochaeta_unknown",2022-03-21,25,10.76,0.0042466703420827
+"475","15","forested","oligochaeta_unknown",2022-03-21,5,10.76,0.000783664267092793
+"476","15","forested","oligochaeta_unknown",2022-03-21,8,10.76,0.00128367778769127
+"477","15","forested","oligochaeta_unknown",2022-03-21,19,10.76,0.00318348509646793
+"478","15","forested","oligochaeta_unknown",2021-06-09,9,10.76,0.00145266734825108
+"479","15","forested","oligochaeta_unknown",2021-06-09,6,10.76,0.000949009047721985
+"480","15","forested","oligochaeta_unknown",2021-06-09,23,10.76,0.00389068228780148
+"481","15","forested","oligochaeta_unknown",2021-06-09,24,21.52,0.0081369817044421
+"482","15","forested","oligochaeta_unknown",2021-06-09,51,10.76,0.00897759945409439
+"483","15","forested","oligochaeta_unknown",2021-06-09,28,10.76,0.00478329838161063
+"484","15","forested","oligochaeta_unknown",2021-06-09,31,10.76,0.00532281434426516
+"485","15","forested","oligochaeta_unknown",2021-06-09,37,10.76,0.00640948817033575
+"486","15","forested","oligochaeta_unknown",2021-06-09,8,21.52,0.00256735557538253
+"487","16","forested","plecoptera_capniidae",2021-11-18,3,10.76,0.00524245374913678
+"488","16","forested","plecoptera_capniidae",2021-11-18,4,10.76,0.0113206318385588
+"489","16","forested","plecoptera_capniidae",2022-01-13,6,10.76,0.0335035537951515
+"490","16","forested","plecoptera_capniidae",2021-10-14,2,10.76,0.0017713908556542
+"491","16","forested","plecoptera_capniidae",2021-10-14,3,10.76,0.00524245374913678
+"492","17","forested","plecoptera_perlidae",2021-11-18,14,10.76,0.533283117303826
+"493","17","forested","plecoptera_perlidae",2021-09-07,4,21.52,0.040751772869177
+"494","17","forested","plecoptera_perlidae",2021-09-07,10,10.76,0.221895336043453
+"495","17","forested","plecoptera_perlidae",2021-09-07,11,21.52,0.568915160710075
+"496","17","forested","plecoptera_perlidae",2021-09-07,2,10.76,0.00334681990078164
+"497","17","forested","plecoptera_perlidae",2021-09-07,16,10.76,0.755239765664733
+"498","17","forested","plecoptera_perlidae",2021-09-07,12,10.76,0.35685723093361
+"499","17","forested","plecoptera_perlidae",2022-03-04,3,10.76,0.00962778013213468
+"500","17","forested","plecoptera_perlidae",2021-11-18,4,10.76,0.0203758864345885
+"501","17","forested","plecoptera_perlidae",2021-10-14,3,10.76,0.00962778013213468
+"502","17","forested","plecoptera_perlidae",2021-05-24,5,10.76,0.0364471861847543
+"503","17","forested","plecoptera_perlidae",2021-05-24,9,10.76,0.168618085354017
+"504","17","forested","plecoptera_perlidae",2021-06-09,3,32.28,0.028883340396404
+"505","17","forested","plecoptera_perlidae",2021-09-07,14,21.52,1.06656623460765
+"506","17","forested","plecoptera_perlidae",2021-09-07,15,10.76,0.638325207542109
+"507","17","forested","plecoptera_perlidae",2021-09-07,13,21.52,0.879254390849027
+"508","17","forested","plecoptera_perlidae",2022-03-04,4,10.76,0.0203758864345885
+"509","18","forested","plecoptera_taeniopterygidae",2021-11-18,2,10.76,0.00548162500422223
+"510","18","forested","plecoptera_taeniopterygidae",2021-11-18,5,10.76,0.0650649867560996
+"511","18","forested","plecoptera_taeniopterygidae",2021-11-18,3,21.52,0.0327631550738056
+"512","18","forested","plecoptera_taeniopterygidae",2021-11-18,4,21.52,0.0712394087296923
+"513","19","forested","trichoptera_hydropsychidae",2021-05-24,1,64.56,0.0035230392
+"514","19","forested","trichoptera_hydropsychidae",2021-05-24,2,53.8,0.0207895427376087
+"515","19","wastewater dominated","trichoptera_hydropsychidae",2021-11-18,1,10.76,0.0005871732
+"516","19","wastewater dominated","trichoptera_hydropsychidae",2021-09-07,2,21.52,0.00831581709504349
+"517","19","wastewater dominated","trichoptera_hydropsychidae",2021-11-18,2,182.92,0.0706844453078697
+"518","19","wastewater dominated","trichoptera_hydropsychidae",2021-05-24,2,21.52,0.00831581709504349
+"519","19","stormwater dominated","trichoptera_hydropsychidae",2021-05-24,4,43.04,0.117772428915723
+"520","19","stormwater dominated","trichoptera_hydropsychidae",2021-05-24,8,10.76,0.208493417636858
+"521","19","stormwater dominated","trichoptera_hydropsychidae",2021-05-24,2,150.64,0.0582107196653044
+"522","19","stormwater dominated","trichoptera_hydropsychidae",2021-05-24,7,10.76,0.142995736893484
+"523","19","stormwater dominated","trichoptera_hydropsychidae",2021-05-24,6,21.52,0.185052668399056
+"524","19","stormwater dominated","trichoptera_hydropsychidae",2021-05-24,3,32.28,0.0391992631261129
+"525","19","stormwater dominated","trichoptera_hydropsychidae",2021-05-24,1,86.08,0.0046973856
+"526","19","forested","trichoptera_hydropsychidae",2021-10-14,3,355.08,0.431191894387242
+"527","19","stormwater dominated","trichoptera_hydropsychidae",2021-09-07,5,150.64,0.77407947661151
+"528","19","stormwater dominated","trichoptera_hydropsychidae",2021-09-07,4,129.12,0.353317286747169
+"529","19","stormwater dominated","trichoptera_hydropsychidae",2021-09-07,1,129.12,0.0070460784
+"530","19","stormwater dominated","trichoptera_hydropsychidae",2021-09-07,3,505.72,0.614121788975769
+"531","19","stormwater dominated","trichoptera_hydropsychidae",2021-09-07,2,581.04,0.224527061566174
+"532","19","forested","trichoptera_hydropsychidae",2021-10-14,4,484.2,1.32493982530188
+"533","19","forested","trichoptera_hydropsychidae",2021-10-14,2,86.08,0.033263268380174
+"534","19","forested","trichoptera_hydropsychidae",2021-10-14,6,139.88,1.20284234459386
+"535","19","forested","trichoptera_hydropsychidae",2021-10-14,7,21.52,0.285991473786968
+"536","19","forested","trichoptera_hydropsychidae",2021-10-14,5,161.4,0.829370867798046
+"537","19","forested","trichoptera_hydropsychidae",2021-10-14,8,10.76,0.208493417636858
+"538","19","forested","trichoptera_hydropsychidae",2021-06-09,2,172.16,0.0665265367603479
+"539","19","forested","trichoptera_hydropsychidae",2021-06-09,3,301.28,0.365859789177054
+"540","19","forested","trichoptera_hydropsychidae",2021-09-07,2,118.36,0.0457369940227392
+"541","19","forested","trichoptera_hydropsychidae",2021-09-07,3,86.08,0.104531368336301
+"542","19","forested","trichoptera_hydropsychidae",2021-09-07,4,43.04,0.117772428915723
+"543","19","forested","trichoptera_hydropsychidae",2021-09-07,7,118.36,1.57295310582833
+"544","19","forested","trichoptera_hydropsychidae",2021-09-07,6,204.44,1.75800034979103
+"545","19","stormwater dominated","trichoptera_hydropsychidae",2021-11-18,4,10.76,0.0294431072289307
+"546","19","wastewater dominated","trichoptera_hydropsychidae",2022-01-13,2,10.76,0.00415790854752175
+"547","19","forested","trichoptera_hydropsychidae",2021-09-07,10,10.76,0.391531064460824
+"548","19","forested","trichoptera_hydropsychidae",2021-07-01,1,10.76,0.0005871732
+"549","19","stormwater dominated","trichoptera_hydropsychidae",2021-10-14,2,10.76,0.00415790854752175
+"550","19","forested","trichoptera_hydropsychidae",2021-05-24,10,21.52,0.783062128921648
+"551","19","forested","trichoptera_hydropsychidae",2021-05-24,4,75.32,0.206101750602515
+"552","19","forested","trichoptera_hydropsychidae",2021-05-24,11,21.52,1.02491810199969
+"553","19","forested","trichoptera_hydropsychidae",2021-05-24,9,10.76,0.290768309670475
+"554","19","forested","trichoptera_hydropsychidae",2021-05-24,7,21.52,0.285991473786968
+"555","19","forested","trichoptera_hydropsychidae",2021-05-24,3,53.8,0.0653321052101881
+"556","19","forested","trichoptera_hydropsychidae",2021-05-24,5,43.04,0.221165564746146
+"557","19","stormwater dominated","trichoptera_hydropsychidae",2021-06-09,4,32.28,0.0883293216867922
+"558","19","stormwater dominated","trichoptera_hydropsychidae",2021-06-09,2,32.28,0.0124737256425652
+"559","19","stormwater dominated","trichoptera_hydropsychidae",2021-06-09,3,32.28,0.0391992631261129
+"560","19","stormwater dominated","trichoptera_hydropsychidae",2021-06-09,5,43.04,0.221165564746146
+"561","19","forested","trichoptera_hydropsychidae",2021-06-09,6,75.32,0.647684339396695
+"562","19","forested","trichoptera_hydropsychidae",2021-06-09,7,53.8,0.714978684467421
+"563","19","forested","trichoptera_hydropsychidae",2021-06-09,4,236.72,0.647748359036476
+"564","19","forested","trichoptera_hydropsychidae",2021-06-09,5,43.04,0.221165564746146
+"565","19","forested","trichoptera_hydropsychidae",2021-06-09,1,64.56,0.0035230392
+"566","19","forested","trichoptera_hydropsychidae",2021-06-09,8,21.52,0.416986835273716
+"567","19","forested","trichoptera_hydropsychidae",2021-06-09,9,32.28,0.872304929011425
+"568","19","forested","trichoptera_hydropsychidae",2021-06-09,10,10.76,0.391531064460824
+"569","19","stormwater dominated","trichoptera_hydropsychidae",2021-08-13,3,32.28,0.0391992631261129
+"570","19","stormwater dominated","trichoptera_hydropsychidae",2021-08-13,2,32.28,0.0124737256425652
+"571","19","stormwater dominated","trichoptera_hydropsychidae",2021-08-13,1,32.28,0.0017615196
+"572","19","stormwater dominated","trichoptera_hydropsychidae",2021-08-13,9,32.28,0.872304929011425
+"573","19","stormwater dominated","trichoptera_hydropsychidae",2021-08-13,5,32.28,0.165874173559609
+"574","19","stormwater dominated","trichoptera_hydropsychidae",2021-09-07,6,86.08,0.740210673596223
+"575","19","stormwater dominated","trichoptera_hydropsychidae",2021-09-07,7,64.56,0.857974421360906
+"576","19","stormwater dominated","trichoptera_hydropsychidae",2021-09-07,8,43.04,0.833973670547432
+"577","19","stormwater dominated","trichoptera_hydropsychidae",2021-09-07,9,53.8,1.45384154835237
+"578","19","stormwater dominated","trichoptera_hydropsychidae",2021-09-07,10,64.56,2.34918638676494
+"579","19","stormwater dominated","trichoptera_hydropsychidae",2021-09-07,12,21.52,1.31040052863132
+"580","19","stormwater dominated","trichoptera_hydropsychidae",2021-09-07,14,10.76,1.01258571864075
+"581","19","stormwater dominated","trichoptera_hydropsychidae",2021-09-07,15,10.76,1.2304045846154
+"582","19","stormwater dominated","trichoptera_hydropsychidae",2021-09-07,11,21.52,1.02491810199969
+"583","19","stormwater dominated","trichoptera_hydropsychidae",2021-09-07,17,10.76,1.75208018924232
+"584","19","forested","trichoptera_hydropsychidae",2021-09-07,5,161.4,0.829370867798046
+"585","19","forested","trichoptera_hydropsychidae",2021-09-07,8,75.32,1.45945392345801
+"586","19","forested","trichoptera_hydropsychidae",2021-09-07,9,64.56,1.74460985802285
+"587","19","forested","trichoptera_hydropsychidae",2021-09-07,12,10.76,0.655200264315658
+"588","19","wastewater dominated","trichoptera_hydropsychidae",2021-08-13,3,10.76,0.0130664210420376
+"589","19","stormwater dominated","trichoptera_hydropsychidae",2021-10-14,3,32.28,0.0391992631261129
+"590","19","wastewater dominated","trichoptera_hydropsychidae",2021-10-14,3,10.76,0.0130664210420376
+"591","19","wastewater dominated","trichoptera_hydropsychidae",2021-10-14,6,10.76,0.0925263341995279
+"592","19","wastewater dominated","trichoptera_hydropsychidae",2021-09-07,3,10.76,0.0130664210420376
+"593","19","wastewater dominated","trichoptera_hydropsychidae",2022-01-13,3,10.76,0.0130664210420376
+"594","19","wastewater dominated","trichoptera_hydropsychidae",2021-07-01,3,10.76,0.0130664210420376
+"595","19","wastewater dominated","trichoptera_hydropsychidae",2021-11-18,3,86.08,0.104531368336301
+"596","19","wastewater dominated","trichoptera_hydropsychidae",2021-07-01,4,10.76,0.0294431072289307
+"597","19","wastewater dominated","trichoptera_hydropsychidae",2021-05-24,4,21.52,0.0588862144578614
+"598","19","wastewater dominated","trichoptera_hydropsychidae",2021-11-18,4,96.84,0.264987965060376
+"599","19","wastewater dominated","trichoptera_hydropsychidae",2022-01-13,4,21.52,0.0588862144578614
+"600","19","wastewater dominated","trichoptera_hydropsychidae",2021-08-13,5,10.76,0.0552913911865364
+"601","19","wastewater dominated","trichoptera_hydropsychidae",2021-07-01,5,10.76,0.0552913911865364
+"602","19","wastewater dominated","trichoptera_hydropsychidae",2021-11-18,5,64.56,0.331748347119218
+"603","19","wastewater dominated","trichoptera_hydropsychidae",2021-06-09,6,10.76,0.0925263341995279
+"604","19","wastewater dominated","trichoptera_hydropsychidae",2021-05-24,6,10.76,0.0925263341995279
+"605","19","wastewater dominated","trichoptera_hydropsychidae",2021-11-18,6,32.28,0.277579002598584
+"606","19","wastewater dominated","trichoptera_hydropsychidae",2022-01-13,6,10.76,0.0925263341995279
+"607","19","wastewater dominated","trichoptera_hydropsychidae",2021-08-13,7,21.52,0.285991473786968
+"608","19","wastewater dominated","trichoptera_hydropsychidae",2021-05-24,7,43.04,0.571982947573937
+"609","19","wastewater dominated","trichoptera_hydropsychidae",2021-11-18,7,21.52,0.285991473786968
+"610","19","wastewater dominated","trichoptera_hydropsychidae",2021-11-18,8,21.52,0.416986835273716
+"611","19","wastewater dominated","trichoptera_hydropsychidae",2021-08-13,8,10.76,0.208493417636858
+"612","19","stormwater dominated","trichoptera_hydropsychidae",2021-11-18,3,10.76,0.0130664210420376
+"613","19","stormwater dominated","trichoptera_hydropsychidae",2021-11-18,10,10.76,0.391531064460824
+"614","19","stormwater dominated","trichoptera_hydropsychidae",2021-11-18,7,21.52,0.285991473786968
+"615","19","stormwater dominated","trichoptera_hydropsychidae",2021-11-18,5,10.76,0.0552913911865364
+"616","19","forested","trichoptera_hydropsychidae",2021-11-18,5,96.84,0.497622520678828
+"617","19","forested","trichoptera_hydropsychidae",2021-11-18,9,53.8,1.45384154835237
+"618","19","forested","trichoptera_hydropsychidae",2021-11-18,8,43.04,0.833973670547432
+"619","19","forested","trichoptera_hydropsychidae",2021-11-18,10,21.52,0.783062128921648
+"620","19","forested","trichoptera_hydropsychidae",2021-11-18,3,43.04,0.0522656841681505
+"621","19","forested","trichoptera_hydropsychidae",2021-11-18,7,118.36,1.57295310582833
+"622","19","forested","trichoptera_hydropsychidae",2021-11-18,4,10.76,0.0294431072289307
+"623","19","forested","trichoptera_hydropsychidae",2021-11-18,2,10.76,0.00415790854752175
+"624","19","forested","trichoptera_hydropsychidae",2021-11-18,12,10.76,0.655200264315658
+"625","19","forested","trichoptera_hydropsychidae",2021-11-18,6,10.76,0.0925263341995279
+"626","19","wastewater dominated","trichoptera_hydropsychidae",2021-11-18,9,10.76,0.290768309670475
+"627","19","wastewater dominated","trichoptera_hydropsychidae",2021-06-09,9,10.76,0.290768309670475
+"628","19","wastewater dominated","trichoptera_hydropsychidae",2021-07-01,10,10.76,0.391531064460824
+"629","19","wastewater dominated","trichoptera_hydropsychidae",2021-11-18,10,10.76,0.391531064460824
+"630","19","forested","trichoptera_hydropsychidae",2022-01-13,8,10.76,0.208493417636858
+"631","19","forested","trichoptera_hydropsychidae",2022-01-13,12,10.76,0.655200264315658
+"632","19","forested","trichoptera_hydropsychidae",2022-01-13,2,10.76,0.00415790854752175
+"633","19","forested","trichoptera_hydropsychidae",2022-03-04,4,10.76,0.0294431072289307
+"634","19","forested","trichoptera_hydropsychidae",2022-03-04,5,10.76,0.0552913911865364
+"635","19","forested","trichoptera_hydropsychidae",2022-03-04,6,21.52,0.185052668399056
+"636","19","forested","trichoptera_hydropsychidae",2022-03-04,7,10.76,0.142995736893484
+"637","19","forested","trichoptera_hydropsychidae",2022-03-04,8,21.52,0.416986835273716
+"638","19","forested","trichoptera_hydropsychidae",2022-03-04,9,32.28,0.872304929011425
+"639","19","forested","trichoptera_hydropsychidae",2022-03-04,10,21.52,0.783062128921648
+"640","19","forested","trichoptera_hydropsychidae",2022-03-21,7,10.76,0.142995736893484
+"641","19","forested","trichoptera_hydropsychidae",2022-03-21,10,10.76,0.391531064460824
+"642","19","forested","trichoptera_hydropsychidae",2022-03-21,9,10.76,0.290768309670475
+"643","19","stormwater dominated","trichoptera_hydropsychidae",2021-06-09,6,32.28,0.277579002598584
+"644","19","stormwater dominated","trichoptera_hydropsychidae",2021-06-09,9,21.52,0.58153661934095
+"645","19","wastewater dominated","trichoptera_hydropsychidae",2022-01-13,12,10.76,0.655200264315658
+"646","19","wastewater dominated","trichoptera_hydropsychidae",2021-06-09,12,21.52,1.31040052863132
+"647","19","wastewater dominated","trichoptera_hydropsychidae",2022-01-13,13,10.76,0.821376459751402
+"648","19","wastewater dominated","trichoptera_hydropsychidae",2021-11-18,14,10.76,1.01258571864075
+"649","20","forested","trichoptera_hydroptilidae",2021-09-07,2,64.56,0.025699674864958
+"650","20","forested","trichoptera_hydroptilidae",2021-05-24,1,21.52,0.001611848
+"651","20","wastewater dominated","trichoptera_hydroptilidae",2021-09-07,2,43.04,0.0171331165766387
+"652","20","wastewater dominated","trichoptera_hydroptilidae",2021-09-07,3,10.76,0.0113803681861303
+"653","21","forested","trichoptera_philopotamidae",2021-11-18,13,10.76,4.59531352569884
+"654","21","forested","trichoptera_philopotamidae",2022-03-04,11,10.76,2.51424293856086
+"655","21","forested","trichoptera_philopotamidae",2021-10-14,6,53.8,1.409534349574
+"656","21","forested","trichoptera_philopotamidae",2021-09-07,10,64.56,10.6937714008646
+"657","21","forested","trichoptera_philopotamidae",2021-11-18,10,43.04,7.12918093390975
+"658","21","forested","trichoptera_philopotamidae",2022-01-13,10,10.76,1.78229523347744
+"659","21","forested","trichoptera_philopotamidae",2021-06-09,9,10.76,1.21841462887383
+"660","21","forested","trichoptera_philopotamidae",2021-09-07,9,75.32,8.52890240211678
+"661","21","forested","trichoptera_philopotamidae",2021-11-18,9,21.52,2.43682925774765
+"662","21","forested","trichoptera_philopotamidae",2022-03-04,9,21.52,2.43682925774765
+"663","21","forested","trichoptera_philopotamidae",2022-03-21,9,10.76,1.21841462887383
+"664","21","forested","trichoptera_philopotamidae",2021-09-07,8,118.36,8.76046550373439
+"665","21","forested","trichoptera_philopotamidae",2021-11-18,8,43.04,3.18562381953978
+"666","21","forested","trichoptera_philopotamidae",2022-03-04,8,10.76,0.796405954884944
+"667","21","forested","trichoptera_philopotamidae",2021-05-24,7,10.76,0.49179438970512
+"668","21","forested","trichoptera_philopotamidae",2021-09-07,7,118.36,5.40973828675631
+"669","21","forested","trichoptera_philopotamidae",2021-11-18,7,53.8,2.4589719485256
+"670","21","forested","trichoptera_philopotamidae",2022-03-04,7,10.76,0.49179438970512
+"671","21","forested","trichoptera_philopotamidae",2021-09-07,6,118.36,3.1009755690628
+"672","21","forested","trichoptera_philopotamidae",2021-07-01,6,10.76,0.2819068699148
+"673","21","forested","trichoptera_philopotamidae",2021-11-18,6,21.52,0.563813739829599
+"674","21","forested","trichoptera_philopotamidae",2021-10-14,5,161.4,2.18953867282222
+"675","21","forested","trichoptera_philopotamidae",2021-06-09,5,10.76,0.145969244854815
+"676","21","forested","trichoptera_philopotamidae",2021-09-07,5,96.84,1.31372320369333
+"677","21","forested","trichoptera_philopotamidae",2021-10-14,4,236.72,1.43495702635278
+"678","21","forested","trichoptera_philopotamidae",2021-11-18,5,43.04,0.583876979419259
+"679","21","forested","trichoptera_philopotamidae",2021-09-07,4,129.12,0.782703832556064
+"680","21","forested","trichoptera_philopotamidae",2022-03-04,4,10.76,0.065225319379672
+"681","21","forested","trichoptera_philopotamidae",2021-10-14,3,161.4,0.346320846411292
+"682","21","forested","trichoptera_philopotamidae",2021-11-18,4,32.28,0.195675958139016
+"683","21","forested","trichoptera_philopotamidae",2022-03-21,4,10.76,0.065225319379672
+"684","21","forested","trichoptera_philopotamidae",2021-09-07,3,21.52,0.0461761128548389
+"685","21","forested","trichoptera_philopotamidae",2021-11-18,3,53.8,0.115440282137097
+"686","21","forested","trichoptera_philopotamidae",2021-10-14,2,32.28,0.0160257803024395
+"687","21","forested","trichoptera_philopotamidae",2021-11-18,2,21.52,0.0106838535349597
+"688","21","forested","trichoptera_philopotamidae",2022-03-04,2,10.76,0.00534192676747983
+"689","22","wastewater dominated","venerida_unknown",2021-10-14,4,10.76,0.108663821881068
+"690","22","wastewater dominated","venerida_unknown",2021-05-24,2,10.76,0.0174690334826491
+"691","22","stormwater dominated","venerida_unknown",2021-05-24,6,10.76,0.316546580151062
+"692","22","stormwater dominated","venerida_unknown",2021-05-24,7,10.76,0.47530929815342
+"693","22","stormwater dominated","venerida_unknown",2021-05-24,9,10.76,0.922126018308123
+"694","22","stormwater dominated","venerida_unknown",2021-05-24,5,32.28,0.587161991498607
+"695","22","forested","venerida_unknown",2021-05-24,3,32.28,0.152666160045317
+"696","22","forested","venerida_unknown",2021-05-24,2,75.32,0.122283234378544
+"697","22","forested","venerida_unknown",2021-05-24,4,10.76,0.108663821881068
+"698","22","wastewater dominated","venerida_unknown",2021-07-01,2,21.52,0.0349380669652983
+"699","22","forested","venerida_unknown",2021-07-01,2,118.36,0.19215936830914
+"700","22","forested","venerida_unknown",2021-07-01,3,21.52,0.101777440030211
+"701","22","forested","venerida_unknown",2021-07-01,5,10.76,0.195720663832869
+"702","22","wastewater dominated","venerida_unknown",2021-09-07,3,10.76,0.0508887200151055
+"703","22","wastewater dominated","venerida_unknown",2021-09-07,1,21.52,0.00561672
+"704","22","wastewater dominated","venerida_unknown",2021-09-07,5,10.76,0.195720663832869
+"705","22","stormwater dominated","venerida_unknown",2021-09-07,2,21.52,0.0349380669652983
+"706","22","stormwater dominated","venerida_unknown",2021-09-07,1,21.52,0.00561672
+"707","22","stormwater dominated","venerida_unknown",2021-09-07,0,10.76,0
+"708","22","forested","venerida_unknown",2021-09-07,2,150.64,0.244566468757088
+"709","22","forested","venerida_unknown",2021-09-07,3,10.76,0.0508887200151055
+"710","22","forested","venerida_unknown",2021-09-07,1,21.52,0.00561672
+"711","22","wastewater dominated","venerida_unknown",2021-11-18,5,21.52,0.391441327665738
+"712","22","wastewater dominated","venerida_unknown",2021-11-18,6,10.76,0.316546580151062
+"713","22","wastewater dominated","venerida_unknown",2021-11-18,2,21.52,0.0349380669652983
+"714","22","stormwater dominated","venerida_unknown",2021-11-18,3,43.04,0.203554880060422
+"715","22","stormwater dominated","venerida_unknown",2021-11-18,2,43.04,0.0698761339305965
+"716","22","stormwater dominated","venerida_unknown",2021-11-18,4,21.52,0.217327643762136
+"717","22","stormwater dominated","venerida_unknown",2021-11-18,1,21.52,0.00561672
+"718","22","stormwater dominated","venerida_unknown",2021-11-18,5,21.52,0.391441327665738
+"719","22","stormwater dominated","venerida_unknown",2021-11-18,6,10.76,0.316546580151062
+"720","22","stormwater dominated","venerida_unknown",2021-11-18,13,10.76,2.43176385359937
+"721","22","stormwater dominated","venerida_unknown",2021-11-18,8,10.76,0.675928991579783
+"722","22","stormwater dominated","venerida_unknown",2021-11-18,9,32.28,2.76637805492437
+"723","22","stormwater dominated","venerida_unknown",2021-10-14,2,43.04,0.0698761339305965
+"724","22","forested","venerida_unknown",2021-11-18,2,139.88,0.227097435274439
+"725","22","forested","venerida_unknown",2021-11-18,5,96.84,1.76148597449582
+"726","22","forested","venerida_unknown",2021-11-18,10,21.52,2.4349092208568
+"727","22","forested","venerida_unknown",2021-11-18,1,43.04,0.01123344
+"728","22","forested","venerida_unknown",2021-11-18,4,21.52,0.217327643762136
+"729","22","forested","venerida_unknown",2021-11-18,7,10.76,0.47530929815342
+"730","22","stormwater dominated","venerida_unknown",2021-10-14,1,10.76,0.00280836
+"731","22","wastewater dominated","venerida_unknown",2022-01-13,3,10.76,0.0508887200151055
+"732","22","forested","venerida_unknown",2022-01-13,2,86.08,0.139752267861193
+"733","22","forested","venerida_unknown",2022-01-13,7,10.76,0.47530929815342
+"734","22","forested","venerida_unknown",2022-01-13,3,32.28,0.152666160045317
+"735","22","forested","venerida_unknown",2022-01-13,8,32.28,2.02778697473935
+"736","22","forested","venerida_unknown",2022-01-13,9,10.76,0.922126018308123
+"737","22","forested","venerida_unknown",2022-01-13,6,10.76,0.316546580151062
+"738","22","forested","venerida_unknown",2022-01-13,4,21.52,0.217327643762136
+"739","22","stormwater dominated","venerida_unknown",2022-03-04,2,32.28,0.0524071004479474
+"740","22","stormwater dominated","venerida_unknown",2022-03-04,3,10.76,0.0508887200151055
+"741","22","forested","venerida_unknown",2022-03-04,2,53.8,0.0873451674132457
+"742","22","forested","venerida_unknown",2022-03-04,3,10.76,0.0508887200151055
+"743","22","forested","venerida_unknown",2022-03-04,4,10.76,0.108663821881068
+"744","22","wastewater dominated","venerida_unknown",2021-06-09,6,32.28,0.949639740453185
+"745","22","forested","venerida_unknown",2021-06-09,5,32.28,0.587161991498607
+"746","22","forested","venerida_unknown",2021-06-09,4,32.28,0.325991465643204
+"747","22","forested","venerida_unknown",2021-06-09,3,32.28,0.152666160045317
+"748","22","stormwater dominated","venerida_unknown",2022-03-21,6,10.76,0.316546580151062
+"749","22","stormwater dominated","venerida_unknown",2022-03-21,10,10.76,1.2174546104284
+"750","22","forested","venerida_unknown",2022-03-04,7,10.76,0.47530929815342
+"751","22","forested","venerida_unknown",2022-03-21,9,10.76,0.922126018308123

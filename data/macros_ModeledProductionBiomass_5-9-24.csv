@@ -1,0 +1,193 @@
+"","Site","Taxon","Measure","average_value","lower_limit","upper_limit"
+"1","forested","diptera_chironomidae","P.ann.samp",1595.59,687.3,2503.88
+"2","forested","diptera_chironomidae","B.ann.samp",397.32,397.32,397.32
+"3","forested","diptera_chironomidae","N.ann.samp",270.47,270.47,270.47
+"4","forested","diptera_chironomidae","P_to_B",1.92,1.73,2.1
+"5","stormwater dominated","diptera_chironomidae","P.ann.samp",7235.14,3167.8,11302.49
+"6","stormwater dominated","diptera_chironomidae","B.ann.samp",1062.74,1062.74,1062.74
+"7","stormwater dominated","diptera_chironomidae","N.ann.samp",991,991,991
+"8","stormwater dominated","diptera_chironomidae","P_to_B",3.26,2.98,3.55
+"9","wastewater dominated","diptera_chironomidae","P.ann.samp",9152.47,3994.02,14310.92
+"10","wastewater dominated","diptera_chironomidae","B.ann.samp",1346.43,1346.43,1346.43
+"11","wastewater dominated","diptera_chironomidae","N.ann.samp",1265.5,1265.5,1265.5
+"12","wastewater dominated","diptera_chironomidae","P_to_B",3.25,2.97,3.54
+"13","forested","coleoptera_elmidae","P.ann.samp",5779.64,2712.18,8847.1
+"14","forested","coleoptera_elmidae","B.ann.samp",373.19,373.19,373.19
+"15","forested","coleoptera_elmidae","N.ann.samp",48.42,48.42,48.42
+"16","forested","coleoptera_elmidae","P_to_B",15.49,7.27,23.71
+"17","forested","coleoptera_psephenidae","P.ann.samp",1325.12,678.03,1972.2
+"18","forested","coleoptera_psephenidae","B.ann.samp",67.8,67.8,67.8
+"19","forested","coleoptera_psephenidae","N.ann.samp",11.74,11.74,11.74
+"20","forested","coleoptera_psephenidae","P_to_B",19.54,10,29.09
+"21","forested","diptera_empididae","P.ann.samp",5.66,5.66,5.66
+"22","forested","diptera_empididae","B.ann.samp",0.57,0.57,0.57
+"23","forested","diptera_empididae","N.ann.samp",0.98,0.98,0.98
+"24","forested","diptera_empididae","P_to_B",10,10,10
+"25","forested","diptera_limoniidae","P.ann.samp",59.12,31.12,87.12
+"26","forested","diptera_limoniidae","B.ann.samp",19.29,19.29,19.29
+"27","forested","diptera_limoniidae","N.ann.samp",11.74,11.74,11.74
+"28","forested","diptera_limoniidae","P_to_B",3.06,1.61,4.52
+"29","forested","diptera_simuliidae","P.ann.samp",362.75,185.68,539.82
+"30","forested","diptera_simuliidae","B.ann.samp",18.57,18.57,18.57
+"31","forested","diptera_simuliidae","N.ann.samp",32.77,32.77,32.77
+"32","forested","diptera_simuliidae","P_to_B",19.54,10,29.07
+"33","forested","diptera_tipulidae","P.ann.samp",812.65,419.97,1205.33
+"34","forested","diptera_tipulidae","B.ann.samp",46.55,46.55,46.55
+"35","forested","diptera_tipulidae","N.ann.samp",4.4,4.4,4.4
+"36","forested","diptera_tipulidae","P_to_B",17.46,9.02,25.9
+"37","forested","ephemeroptera_baetidae","P.ann.samp",1275.92,649.25,1902.58
+"38","forested","ephemeroptera_baetidae","B.ann.samp",64.93,64.93,64.93
+"39","forested","ephemeroptera_baetidae","N.ann.samp",60.16,60.16,60.16
+"40","forested","ephemeroptera_baetidae","P_to_B",19.65,10,29.3
+"41","forested","ephemeroptera_ephemerellidae","P.ann.samp",53.38,53.38,53.38
+"42","forested","ephemeroptera_ephemerellidae","B.ann.samp",5.34,5.34,5.34
+"43","forested","ephemeroptera_ephemerellidae","N.ann.samp",0.98,0.98,0.98
+"44","forested","ephemeroptera_ephemerellidae","P_to_B",10,10,10
+"45","forested","ephemeroptera_heptageniidae","P.ann.samp",6974.43,4282.73,9666.13
+"46","forested","ephemeroptera_heptageniidae","B.ann.samp",385.78,385.78,385.78
+"47","forested","ephemeroptera_heptageniidae","N.ann.samp",193.19,193.19,193.19
+"48","forested","ephemeroptera_heptageniidae","P_to_B",18.08,11.1,25.06
+"49","forested","ephemeroptera_isonychiidae","P.ann.samp",5575.79,5575.79,5575.79
+"50","forested","ephemeroptera_isonychiidae","B.ann.samp",557.58,557.58,557.58
+"51","forested","ephemeroptera_isonychiidae","N.ann.samp",101.24,101.24,101.24
+"52","forested","ephemeroptera_isonychiidae","P_to_B",10,10,10
+"53","forested","ephemeroptera_leptohyphidae","None",0,0,0
+"54","forested","megaloptera_corydalidae","P.ann.samp",15852.6,8213.38,23491.83
+"55","forested","megaloptera_corydalidae","B.ann.samp",821.34,821.34,821.34
+"56","forested","megaloptera_corydalidae","N.ann.samp",8.8,8.8,8.8
+"57","forested","megaloptera_corydalidae","P_to_B",19.3,10,28.6
+"58","forested","odonata_coenagrionidae","P.ann.samp",602.52,308.87,896.17
+"59","forested","odonata_coenagrionidae","B.ann.samp",30.89,30.89,30.89
+"60","forested","odonata_coenagrionidae","N.ann.samp",2.93,2.93,2.93
+"61","forested","odonata_coenagrionidae","P_to_B",19.51,10,29.01
+"62","forested","odonata_gomphidae","P.ann.samp",2820.82,1452.15,4189.48
+"63","forested","odonata_gomphidae","B.ann.samp",145.22,145.22,145.22
+"64","forested","odonata_gomphidae","N.ann.samp",7.83,7.83,7.83
+"65","forested","odonata_gomphidae","P_to_B",19.43,10,28.85
+"66","forested","oligochaeta_unknown","P.ann.samp",443.92,400.76,487.09
+"67","forested","oligochaeta_unknown","B.ann.samp",44.36,44.36,44.36
+"68","forested","oligochaeta_unknown","N.ann.samp",154.06,154.06,154.06
+"69","forested","oligochaeta_unknown","P_to_B",10.01,9.03,10.98
+"70","forested","plecoptera_capniidae","P.ann.samp",51.89,51.89,51.89
+"71","forested","plecoptera_capniidae","B.ann.samp",5.19,5.19,5.19
+"72","forested","plecoptera_capniidae","N.ann.samp",4.89,4.89,4.89
+"73","forested","plecoptera_capniidae","P_to_B",10,10,10
+"74","forested","plecoptera_perlidae","P.ann.samp",7692.64,1673.97,13711.31
+"75","forested","plecoptera_perlidae","B.ann.samp",496.45,496.45,496.45
+"76","forested","plecoptera_perlidae","N.ann.samp",23.48,23.48,23.48
+"77","forested","plecoptera_perlidae","P_to_B",15.5,3.37,27.62
+"78","forested","plecoptera_taeniopterygidae","P.ann.samp",203.2,78.12,328.28
+"79","forested","plecoptera_taeniopterygidae","B.ann.samp",15.87,15.87,15.87
+"80","forested","plecoptera_taeniopterygidae","N.ann.samp",5.87,5.87,5.87
+"81","forested","plecoptera_taeniopterygidae","P_to_B",12.81,4.92,20.69
+"82","forested","trichoptera_hydropsychidae","P.ann.samp",29329.64,29329.64,29329.64
+"83","forested","trichoptera_hydropsychidae","B.ann.samp",2932.96,2932.96,2932.96
+"84","forested","trichoptera_hydropsychidae","N.ann.samp",395.67,395.67,395.67
+"85","forested","trichoptera_hydropsychidae","P_to_B",10,10,10
+"86","forested","trichoptera_hydroptilidae","P.ann.samp",49.66,25.56,73.75
+"87","forested","trichoptera_hydroptilidae","B.ann.samp",2.56,2.56,2.56
+"88","forested","trichoptera_hydroptilidae","N.ann.samp",8.8,8.8,8.8
+"89","forested","trichoptera_hydroptilidae","P_to_B",19.43,10,28.85
+"90","forested","trichoptera_philopotamidae","P.ann.samp",138894.28,70645.29,207143.26
+"91","forested","trichoptera_philopotamidae","B.ann.samp",7064.53,7064.53,7064.53
+"92","forested","trichoptera_philopotamidae","N.ann.samp",172.65,172.65,172.65
+"93","forested","trichoptera_philopotamidae","P_to_B",19.66,10,29.32
+"94","forested","venerida_unknown","P.ann.samp",12651.13,12651.13,12651.13
+"95","forested","venerida_unknown","B.ann.samp",1265.11,1265.11,1265.11
+"96","forested","venerida_unknown","N.ann.samp",113.47,113.47,113.47
+"97","forested","venerida_unknown","P_to_B",10,10,10
+"98","wastewater dominated","coleoptera_elmidae","P.ann.samp",86.37,86.37,86.37
+"99","wastewater dominated","coleoptera_elmidae","B.ann.samp",8.64,8.64,8.64
+"100","wastewater dominated","coleoptera_elmidae","N.ann.samp",6.85,6.85,6.85
+"101","wastewater dominated","coleoptera_elmidae","P_to_B",10,10,10
+"102","wastewater dominated","coleoptera_psephenidae","None",0,0,0
+"103","wastewater dominated","diptera_empididae","P.ann.samp",16.7,8.49,24.91
+"104","wastewater dominated","diptera_empididae","B.ann.samp",0.85,0.85,0.85
+"105","wastewater dominated","diptera_empididae","N.ann.samp",1.47,1.47,1.47
+"106","wastewater dominated","diptera_empididae","P_to_B",19.68,10,29.35
+"107","wastewater dominated","diptera_limoniidae","None",0,0,0
+"108","wastewater dominated","diptera_simuliidae","P.ann.samp",21.01,21.01,21.01
+"109","wastewater dominated","diptera_simuliidae","B.ann.samp",2.1,2.1,2.1
+"110","wastewater dominated","diptera_simuliidae","N.ann.samp",6.36,6.36,6.36
+"111","wastewater dominated","diptera_simuliidae","P_to_B",10,10,10
+"112","wastewater dominated","diptera_tipulidae","None",0,0,0
+"113","wastewater dominated","ephemeroptera_baetidae","P.ann.samp",808.95,338.59,1279.32
+"114","wastewater dominated","ephemeroptera_baetidae","B.ann.samp",127.93,127.93,127.93
+"115","wastewater dominated","ephemeroptera_baetidae","N.ann.samp",89.99,89.99,89.99
+"116","wastewater dominated","ephemeroptera_baetidae","P_to_B",6.32,2.65,10
+"117","wastewater dominated","ephemeroptera_ephemerellidae","None",0,0,0
+"118","wastewater dominated","ephemeroptera_heptageniidae","None",0,0,0
+"119","wastewater dominated","ephemeroptera_isonychiidae","None",0,0,0
+"120","wastewater dominated","ephemeroptera_leptohyphidae","P.ann.samp",121.77,121.77,121.77
+"121","wastewater dominated","ephemeroptera_leptohyphidae","B.ann.samp",12.18,12.18,12.18
+"122","wastewater dominated","ephemeroptera_leptohyphidae","N.ann.samp",16.63,16.63,16.63
+"123","wastewater dominated","ephemeroptera_leptohyphidae","P_to_B",10,10,10
+"124","wastewater dominated","megaloptera_corydalidae","None",0,0,0
+"125","wastewater dominated","odonata_coenagrionidae","None",0,0,0
+"126","wastewater dominated","odonata_gomphidae","P.ann.samp",25.2,25.2,25.2
+"127","wastewater dominated","odonata_gomphidae","B.ann.samp",2.52,2.52,2.52
+"128","wastewater dominated","odonata_gomphidae","N.ann.samp",0.98,0.98,0.98
+"129","wastewater dominated","odonata_gomphidae","P_to_B",10,10,10
+"130","wastewater dominated","oligochaeta_unknown","P.ann.samp",52.29,47.21,57.37
+"131","wastewater dominated","oligochaeta_unknown","B.ann.samp",5.19,5.19,5.19
+"132","wastewater dominated","oligochaeta_unknown","N.ann.samp",102.22,102.22,102.22
+"133","wastewater dominated","oligochaeta_unknown","P_to_B",10.07,9.1,11.05
+"134","wastewater dominated","plecoptera_capniidae","None",0,0,0
+"135","wastewater dominated","plecoptera_perlidae","None",0,0,0
+"136","wastewater dominated","plecoptera_taeniopterygidae","None",0,0,0
+"137","wastewater dominated","trichoptera_hydropsychidae","P.ann.samp",13169.89,2328.68,24011.1
+"138","wastewater dominated","trichoptera_hydropsychidae","B.ann.samp",823.96,823.96,823.96
+"139","wastewater dominated","trichoptera_hydropsychidae","N.ann.samp",87.55,87.55,87.55
+"140","wastewater dominated","trichoptera_hydropsychidae","P_to_B",15.98,2.83,29.14
+"141","wastewater dominated","trichoptera_hydroptilidae","P.ann.samp",49.68,24.6,74.75
+"142","wastewater dominated","trichoptera_hydroptilidae","B.ann.samp",2.59,2.59,2.59
+"143","wastewater dominated","trichoptera_hydroptilidae","N.ann.samp",4.89,4.89,4.89
+"144","wastewater dominated","trichoptera_hydroptilidae","P_to_B",19.16,9.49,28.84
+"145","wastewater dominated","trichoptera_philopotamidae","None",0,0,0
+"146","wastewater dominated","venerida_unknown","P.ann.samp",1968.62,1968.62,1968.62
+"147","wastewater dominated","venerida_unknown","B.ann.samp",196.86,196.86,196.86
+"148","wastewater dominated","venerida_unknown","N.ann.samp",17.12,17.12,17.12
+"149","wastewater dominated","venerida_unknown","P_to_B",10,10,10
+"150","stormwater dominated","coleoptera_elmidae","P.ann.samp",65.71,34.91,96.51
+"151","stormwater dominated","coleoptera_elmidae","B.ann.samp",32.63,32.63,32.63
+"152","stormwater dominated","coleoptera_elmidae","N.ann.samp",6.85,6.85,6.85
+"153","stormwater dominated","coleoptera_elmidae","P_to_B",2.01,1.07,2.96
+"154","stormwater dominated","coleoptera_psephenidae","None",0,0,0
+"155","stormwater dominated","diptera_empididae","P.ann.samp",66.9,33.84,99.96
+"156","stormwater dominated","diptera_empididae","B.ann.samp",3.38,3.38,3.38
+"157","stormwater dominated","diptera_empididae","N.ann.samp",6.36,6.36,6.36
+"158","stormwater dominated","diptera_empididae","P_to_B",19.77,10,29.54
+"159","stormwater dominated","diptera_limoniidae","P.ann.samp",50.3,25.98,74.63
+"160","stormwater dominated","diptera_limoniidae","B.ann.samp",2.6,2.6,2.6
+"161","stormwater dominated","diptera_limoniidae","N.ann.samp",2.93,2.93,2.93
+"162","stormwater dominated","diptera_limoniidae","P_to_B",19.36,10,28.72
+"163","stormwater dominated","diptera_simuliidae","None",0,0,0
+"164","stormwater dominated","diptera_tipulidae","None",0,0,0
+"165","stormwater dominated","ephemeroptera_baetidae","P.ann.samp",381.72,42.43,721.02
+"166","stormwater dominated","ephemeroptera_baetidae","B.ann.samp",39.11,39.11,39.11
+"167","stormwater dominated","ephemeroptera_baetidae","N.ann.samp",42.55,42.55,42.55
+"168","stormwater dominated","ephemeroptera_baetidae","P_to_B",9.76,1.09,18.44
+"169","stormwater dominated","ephemeroptera_ephemerellidae","None",0,0,0
+"170","stormwater dominated","ephemeroptera_heptageniidae","None",0,0,0
+"171","stormwater dominated","ephemeroptera_isonychiidae","None",0,0,0
+"172","stormwater dominated","ephemeroptera_leptohyphidae","None",0,0,0
+"173","stormwater dominated","megaloptera_corydalidae","None",0,0,0
+"174","stormwater dominated","odonata_coenagrionidae","None",0,0,0
+"175","stormwater dominated","odonata_gomphidae","None",0,0,0
+"176","stormwater dominated","oligochaeta_unknown","P.ann.samp",178.25,161.21,195.28
+"177","stormwater dominated","oligochaeta_unknown","B.ann.samp",17.77,17.77,17.77
+"178","stormwater dominated","oligochaeta_unknown","N.ann.samp",222.54,222.54,222.54
+"179","stormwater dominated","oligochaeta_unknown","P_to_B",10.03,9.07,10.99
+"180","stormwater dominated","plecoptera_capniidae","None",0,0,0
+"181","stormwater dominated","plecoptera_perlidae","None",0,0,0
+"182","stormwater dominated","plecoptera_taeniopterygidae","None",0,0,0
+"183","stormwater dominated","trichoptera_hydropsychidae","P.ann.samp",17094.43,17094.43,17094.43
+"184","stormwater dominated","trichoptera_hydropsychidae","B.ann.samp",1709.44,1709.44,1709.44
+"185","stormwater dominated","trichoptera_hydropsychidae","N.ann.samp",261.66,261.66,261.66
+"186","stormwater dominated","trichoptera_hydropsychidae","P_to_B",10,10,10
+"187","stormwater dominated","trichoptera_hydroptilidae","None",0,0,0
+"188","stormwater dominated","trichoptera_philopotamidae","None",0,0,0
+"189","stormwater dominated","venerida_unknown","P.ann.samp",11861.53,11861.53,11861.53
+"190","stormwater dominated","venerida_unknown","B.ann.samp",1186.15,1186.15,1186.15
+"191","stormwater dominated","venerida_unknown","N.ann.samp",45,45,45
+"192","stormwater dominated","venerida_unknown","P_to_B",10,10,10
