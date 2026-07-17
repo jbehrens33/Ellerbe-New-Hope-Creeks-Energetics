@@ -1,0 +1,539 @@
+---
+title: "Secondary Production"
+author: "Jonny Behrens"
+date: "`r Sys.Date()`"
+knit: (function(inputFile, encoding) {
+      out_dir <- "1_output-knitted";
+      rmarkdown::render(inputFile, encoding=encoding,
+                        output_dir=file.path(dirname(inputFile), out_dir))})
+output:
+  html_document: 
+    theme: cosmo
+---
+
+# Overview
+
+Code to conduct secondary biomass and production estimates from surber samples. Code inspired by secpRod package.
+
+# Set Up
+
+```{r setup, echo = FALSE, warning= FALSE, message=FALSE, results='hide', include=FALSE}
+# Set working directory. Ensure the .here file is stored in desired working directory
+knitr::opts_knit$set(root.dir = here::here())
+
+# Some knit settings 
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+
+## Clear environment
+rm(list = ls())
+
+## Libraries
+library(pacman)
+p_load(scales,openxlsx,ggpubr,secpRod,treemapify,tidyverse)
+```
+
+# Data Prep
+
+## Macros
+
+Macros data is processed in *"Data-Processing_Macroinvertebrates"*
+
+```{r}
+sites<- c('forested', 'wastewater dominated', 'stormwater dominated') 
+
+# Taxa to remove
+rm_taxa<-c("[gastropoda]_unknown",
+           #"venerida_unknown", 
+           "collembola_unknown", "arachnida_unknown")
+
+# Download Data
+raw_macro_data<-read.csv("_Data-Processing/data_processed/Bio_processed/cleaned-macros_12-22-23.csv") %>%
+  mutate(Sampling_Date = as.Date(Sampling_Date)) %>% 
+  mutate(Sampling_Date = if_else(Sampling_Date == "2021-05-25", 
+                                  as.Date("2021-05-24"), Sampling_Date)) %>% 
+  filter(!(Order_Family %in% rm_taxa)) # remove some taxa not of interest
+```
+
+```{r}
+Info_data<-read.csv("_Data-Processing/data_meta/Bio_meta/secpRod_example-InfoDatav2.csv") %>% 
+    mutate(taxonID = str_replace_all(taxonID, "\\[|\\]", ""))
+```
+
+```{r}
+BP_Data_Method1<-raw_macro_data %>% 
+  # clean up
+  filter(!is.na(Length_mm)) %>% 
+  filter(!str_detect(Order_Family, "tbd")) %>% 
+  # rename the chironomidae
+  mutate(Order_Family = case_when(Order_Family == "diptera_chironomidae" & Site == "forested"  ~ "diptera_chironomidae_f",
+                             Order_Family == "diptera_chironomidae" & Site == "stormwater dominated"  ~ "diptera_chironomidae_sw",
+                             Order_Family == "diptera_chironomidae" & Site == "wastewater dominated"  ~ "diptera_chironomidae_ww",
+                             .default = Order_Family)) %>%
+  # full_join(empty) %>% 
+  # Group specimens into size classes
+  # 0.5 for anything less than 1, and then all others based on integers
+  mutate(interval = if_else(Length_mm < 0.5, 0.5, round(Length_mm,0))) %>%
+  # order matters for later
+  group_by(Site, Order_Family, interval) %>% 
+  # for now, let's remove any that don't have a calculated mass
+  filter(!is.na(Calcd_Mass_mg)) %>% 
+  # Calculate density and then average mass for each taxa by site, for each size class
+  mutate(Density_Size = n(),
+         Mass_Average_Size = ave(Calcd_Mass_mg), 
+         Biomass_Size = sum(Calcd_Mass_mg),
+         Ave_length_Size = ave(Length_mm)) %>% 
+  group_by(Site, Order_Family, interval, Sampling_Date) %>%
+  # Calculate density and then average mass for each taxa by site, date, for each size class
+  mutate(Density_SizeDate = n(),
+         Mass_Average_SizeDate = ave(Calcd_Mass_mg), 
+         Biomass_SizeDate = sum(Calcd_Mass_mg),
+         Ave_length_SizeDate = ave(Length_mm)) %>% 
+  ungroup() %>% 
+  rename(taxonID = Order_Family,
+         dateID = Sampling_Date, 
+         lengthClass = interval) %>% 
+  # filter(str_detect(taxonID, "olig|chiron|hyrdopsych|hepta|philo|baeti|isonych|elmi|
+  #                   simuli|perlid|hydrop|corydal|gomp|tipulid|capnid")) %>%
+  mutate(taxonID = str_replace_all(taxonID, "\\[|\\]", ""))
+```
+
+```{r}
+Chiron_Data<-BP_Data_Method1 %>% 
+  filter(str_detect(taxonID, "chiron")) %>% 
+  mutate(Chiron = if_else(str_detect(taxonID, "chiron"), "Y", "N")) 
+
+Non_Chiron_Data<- BP_Data_Method1 %>% 
+  filter(!str_detect(taxonID, "chiron"))
+```
+
+## Save length data
+
+```{r}
+write.csv(BP_Data_Method1, "1_Ecology-Chapter/1_data-synth/macros-lengths_2-9-24.csv")
+
+```
+
+# Chironomidae
+
+## Calc Meta Data
+
+```{r}
+# Make an empty dataset
+C_lengths<-c(0.5, seq(1:max(Chiron_Data$lengthClass)))
+
+C_dates<-Chiron_Data %>% 
+  group_by(dateID) %>% 
+  count() %>% 
+  dplyr::select(-n) %>% 
+  unlist()
+
+C_taxa<-Chiron_Data %>% 
+  group_by(taxonID) %>% 
+  count() %>% 
+  dplyr::select(-n) %>% 
+  unlist()
+
+C_data_free <- expand.grid(Site = sites, dateID = as.Date(C_dates, origin = "1970-01-01"), 
+                         lengthClass = C_lengths, taxonID = C_taxa, 
+                         KEEP.OUT.ATTRS = F)
+```
+
+## Calc Masses
+
+```{r}
+C_Mass_data<-Chiron_Data %>% 
+  distinct(Site, taxonID, dateID, lengthClass, Density_SizeDate, Chiron) %>% 
+  full_join(C_data_free) %>% 
+  filter(!is.na(Chiron)) %>% dplyr::select(-Chiron) %>% 
+  mutate(n_m2 = 10.76*Density_SizeDate, .keep = "unused") %>% 
+  #filter(!str_detect(taxonID, "oligoch")) %>%  # remove worms
+  mutate(lengthClass = as.numeric(lengthClass)) %>% 
+  mutate(n_m2 = ifelse(is.na(n_m2), 0, n_m2))
+```
+
+```{r}
+C_mass_list <- list()
+
+for (i in 1:length(C_taxa)) {
+
+  C_mass_taxa_i<-C_Mass_data %>%
+    filter(taxonID == C_taxa[[i]]) %>%
+    filter(!is.na(lengthClass))# fix later
+
+  info_taxa_i<-Info_data %>%
+    filter(taxonID == C_taxa[[i]])
+
+  C_mass_result<- secpRod::convert_length_to_mass(taxaSampleList = C_mass_taxa_i,
+                                         taxaInfo = info_taxa_i)
+
+  C_mass_list[[i]]<-C_mass_result
+}
+```
+
+```{r}
+C_mass_combined<-bind_rows(C_mass_list, .id = "column_label") %>%
+  filter(n_m2 > 0) %>%
+  mutate(total_mass_AFDMg_m2 = n_m2*afdm_mg/1000) %>% 
+  dplyr::select(-afdm_mg)
+```
+
+```{r}
+C_mass_combined %>% 
+  summarize(total_biomass = sum(total_mass_AFDMg_m2, na.rm = T),
+            .by = "Site")
+```
+
+## Production Calculation
+
+```{r}
+C_production_list <- list()
+
+  for (taxa_i in 1:length(C_taxa)) {
+  
+    # extract the mass data for a given taxa from a given site
+    mass_taxa_1<-C_mass_list[[taxa_i]] %>% 
+       dplyr::select(-Site) %>% 
+       mutate(repID = 1, .after = "taxonID") 
+    
+    mass_taxa_i<-mass_taxa_1 %>% # simply duplicate, since code needs at least 2 replicates
+      mutate(repID = 2) %>% 
+      full_join(mass_taxa_1)
+    
+    # extract the information data for a given taxa
+    info_taxa_i<-Info_data %>% 
+      filter(taxonID == C_taxa[[taxa_i]])
+    
+    # run production calculation
+    production<-calc_production(taxaSampleListMass = mass_taxa_i,
+      infoCols = c(1:3),
+      taxaInfo = info_taxa_i,
+      bootNum = 500,
+      wrap = TRUE,
+      taxaSummary = 'short')
+    
+    # save the output
+    C_production_list[[C_taxa[taxa_i]]] <- production
+}
+```
+
+```{r}
+C_plot_data <- data.frame(Taxon = character(0), Measure = character(0), 
+                        Replicate = character(0), Value = numeric(0), average_value = numeric(0), 
+                        lower_limit = numeric(0), upper_limit = numeric(0))
+
+for (taxa_i in 1:length(C_taxa)) {
+
+  taxa_name <- C_taxa[taxa_i]
+  
+  if (length(C_production_list[[taxa_name]]$P.boots) > 7) {
+
+    plot_data_i<- C_production_list[[taxa_name]]$P.boots %>%
+      as.data.frame() %>% 
+      mutate_all(as.numeric) %>%
+      rownames_to_column(var = "Measure") %>% 
+      data.table::transpose(keep.names="Replicate",  make.names="Measure") %>%
+      # replace problematic P:B values that are unreasonably low (<0) or high (>50) with 10, for now
+      # we will also recalculate B.ann.samp with this new number
+      mutate(P.ann.samp = if_else(P.ann.samp/B.ann.samp < 1 | P.ann.samp/B.ann.samp > 50,
+             10*B.ann.samp, P.ann.samp)) %>%
+      # Now calculate some measures
+      mutate(P_to_B = P.ann.samp/B.ann.samp) %>% 
+      pivot_longer(names_to = "Measure", values_to = "Value", 2:5) %>% 
+      mutate(Value = as.numeric(Value)) %>% 
+      mutate(average_value = mean(Value), 
+             lower_limit = quantile(Value, probs = 0.025),
+             upper_limit = quantile(Value, probs = 0.975),
+             .by = "Measure") %>% 
+      mutate(Taxon = taxa_name)
+
+    } else {
+      # If P.boots length is 6 or less, create a data frame with zeros
+      plot_data_i <- data.frame(
+        Taxon = taxa_name,
+        Measure = "None",  Replicate = "None",
+        Value = 0, average_value = 0,
+        lower_limit = 0, upper_limit = 0)
+      
+    }
+
+    # Combine everything
+    C_plot_data <-  bind_rows(C_plot_data, plot_data_i)
+
+  }
+```
+
+```{r}
+C_plot_data %>% 
+  distinct(Taxon, Measure, average_value,lower_limit,upper_limit)
+```
+
+# Non-Chironomidae
+
+## Calc Meta Data
+
+```{r}
+# Make an empty dataset
+lengths<-c(0.5, seq(1:max(Non_Chiron_Data$lengthClass)))
+
+dates<-Non_Chiron_Data %>% 
+  group_by(dateID) %>% 
+  count() %>% 
+  dplyr::select(-n) %>% 
+  unlist()
+
+taxa<-Non_Chiron_Data %>% 
+  group_by(taxonID) %>% 
+  count() %>% 
+  dplyr::select(-n) %>% 
+  unlist()
+
+data_free <- expand.grid(Site = sites, dateID = as.Date(dates, origin = "1970-01-01"), 
+                         lengthClass = lengths, taxonID = taxa, 
+                         KEEP.OUT.ATTRS = F)
+```
+
+```{r}
+Mass_data<-Non_Chiron_Data %>% 
+  distinct(Site, taxonID, dateID, lengthClass, Density_SizeDate) %>% 
+  full_join(data_free) %>% 
+  mutate(n_m2 = 10.76*Density_SizeDate, .keep = "unused") %>% 
+  #filter(!str_detect(taxonID, "oligoch")) %>%  # remove worms
+  mutate(lengthClass = as.numeric(lengthClass)) %>% 
+  mutate(n_m2 = ifelse(is.na(n_m2), 0, n_m2))
+```
+
+```{r}
+mass_list <- list()
+
+for (i in 1:length(taxa)) {
+
+  mass_taxa_i<-Mass_data %>%
+    filter(taxonID == taxa[[i]]) %>%
+    filter(!is.na(lengthClass))# fix later
+
+  info_taxa_i<-Info_data %>%
+    filter(taxonID == taxa[[i]])
+
+  mass_result<- secpRod::convert_length_to_mass(taxaSampleList = mass_taxa_i,
+                                         taxaInfo = info_taxa_i)
+
+  mass_list[[i]]<-mass_result
+}
+```
+
+```{r}
+mass_combined<-bind_rows(mass_list, .id = "column_label") %>%
+  filter(n_m2 > 0) %>%
+  mutate(total_mass_AFDMg_m2 = n_m2*afdm_mg/1000) %>% 
+  dplyr::select(-afdm_mg)
+```
+
+```{r}
+mass_combined %>% 
+  summarize(total_biomass = sum(total_mass_AFDMg_m2, na.rm = T),
+            .by = "Site")
+```
+
+## Each taxa by month
+
+```{r}
+# From Dark2 RBrewer colors
+#pal_sites<-c('#1B9E77', '#7570B3', '#D95F02') 
+pal_sites<-c('#009E73', '#0072B2', '#D55E00')
+sites<- c('forested', 'wastewater dominated', 'stormwater dominated') 
+names(pal_sites) <- sites
+
+metab_color_df<-c(GPP_Daily="#7BB97A", NetMetab_Daily="#C59883")
+```
+
+```{r}
+for (i in 1:length(taxa)) {
+
+  cohort_plot<-mass_list[[i]] %>%
+    filter(n_m2 > 0) %>%
+    ggplot(aes(x=lengthClass, y=n_m2, fill = Site)) +
+    geom_col(position = "dodge") +
+    facet_wrap(~dateID) +
+    scale_fill_manual(values = pal_sites) +
+    theme(legend.position = "bottom") +
+    labs(subtitle = taxa[i]) +
+    theme_pubr()
+
+  plot(cohort_plot)
+}
+```
+
+## Production Calculation
+
+```{r}
+production_list <- list()
+
+for(site_j in 1:length(sites)) {
+  
+   # Create a list to save to for each site
+    site <- sites[[site_j]]
+    production_list[[site]] <- list()  # Create a list for each site
+  
+  for (taxa_i in 1:length(taxa)) {
+  
+    # extract the mass data for a given taxa from a given site
+    mass_taxa_1<-mass_list[[taxa_i]] %>% 
+      filter(Site == sites[[site_j]]) %>% 
+      dplyr::select(-Site) %>% 
+       mutate(repID = 1, .after = "taxonID") 
+    
+    mass_taxa_i<-mass_taxa_1 %>% # simply duplicate, since code needs at least 2 replicates
+      mutate(repID = 2) %>% 
+      full_join(mass_taxa_1)
+    
+    # extract the information data for a given taxa
+    info_taxa_i<-Info_data %>% 
+      filter(taxonID == taxa[[taxa_i]])
+    
+    # run production calculation
+    production<-calc_production(taxaSampleListMass = mass_taxa_i,
+      infoCols = c(1:3),
+      taxaInfo = info_taxa_i,
+      bootNum = 500,
+      wrap = TRUE,
+      taxaSummary = 'short')
+    
+    # save the output
+    production_list[[site]][[taxa[taxa_i]]] <- production
+  }
+}
+```
+
+```{r}
+plot_data <- data.frame(Site = character(0), Taxon = character(0), Measure = character(0), 
+                        Replicate = character(0), Value = numeric(0), average_value = numeric(0), 
+                        lower_limit = numeric(0), upper_limit = numeric(0))
+
+for(site_j in 1:length(sites)) {
+  for (taxa_i in 1:length(taxa)) {
+
+  site_name <- sites[site_j]
+  taxa_name <- taxa[taxa_i]
+  
+  if (length(production_list[[site_name]][[taxa_name]]$P.boots) > 7) {
+
+    plot_data_i<- production_list[[site_name]][[taxa_name]]$P.boots %>%
+      as.data.frame() %>% 
+      mutate_all(as.numeric) %>%
+      rownames_to_column(var = "Measure") %>% 
+      data.table::transpose(keep.names="Replicate",  make.names="Measure") %>%
+      # replace problematic P:B values that are unreasonably low (<0) or high (>50) with 10, for now
+      # we will also recalculate B.ann.samp with this new number
+      mutate(P.ann.samp = if_else(P.ann.samp/B.ann.samp < 1 | P.ann.samp/B.ann.samp > 30,
+             10*B.ann.samp, P.ann.samp)) %>%
+      # Now calculate some measures
+      mutate(P_to_B = P.ann.samp/B.ann.samp) %>% 
+      pivot_longer(names_to = "Measure", values_to = "Value", 2:5) %>% 
+      mutate(Value = as.numeric(Value)) %>% 
+      mutate(lower_limit = quantile(Value, probs = 0.025),
+             upper_limit = quantile(Value, probs = 0.975),
+             average_value = (lower_limit + upper_limit)/2,
+             .by = "Measure") %>% 
+      mutate(Site = site_name, 
+             Taxon = taxa_name)
+
+    } else {
+      # If P.boots length is 6 or less, create a data frame with zeros
+      plot_data_i <- data.frame(
+        Site = site_name, Taxon = taxa_name,
+        Measure = "None",  Replicate = "None",
+        Value = 0, average_value = 0,
+        lower_limit = 0, upper_limit = 0)
+      
+    }
+
+    # Combine everything
+    plot_data <-  bind_rows(plot_data, plot_data_i)
+
+  }
+}
+
+```
+
+```{r}
+Taxa_Counts<-Mass_data %>% 
+  summarize(sum_count = sum(n_m2, na.rm = T), 
+            .by = c("Site", "taxonID")) %>% 
+  mutate(SD_0.1 = 0.1*sd(sum_count), 
+         .by = "Site") %>% 
+  mutate(Rarity = if_else(sum_count < SD_0.1, "Rare", "Common")) %>% 
+  arrange(Site, desc(sum_count))
+
+Taxa_Counts
+```
+
+```{r}
+# Identify P:B measures that are unreasonably high (>100) or low (<0)
+concerning_taxa_PtoB<-plot_data %>%
+  filter(str_detect(Measure, "P_to_B")) %>%
+  filter(average_value == 10) %>%
+  distinct(Site, Taxon, Measure, average_value)
+
+concerning_taxa_PtoB
+```
+
+# Merge together
+
+```{r}
+Merged_PB<-C_plot_data %>% 
+  mutate(Site = case_when(str_detect(Taxon, "f") ~ "forested",
+                          str_detect(Taxon, "sw") ~ "stormwater dominated",
+                          str_detect(Taxon, "ww") ~ "wastewater dominated")) %>% 
+  mutate(Taxon = "diptera_chironomidae") %>%
+  # Fixing estimate of the upper limit for chironomidae
+  mutate(upper_limit = if_else(Measure == "P.ann.samp", 3*upper_limit,upper_limit),
+         average_value = (lower_limit + upper_limit)/2) %>%
+  full_join(plot_data) %>% 
+  distinct(Site, Taxon, Measure,average_value,lower_limit,upper_limit) %>% 
+  mutate(across(where(is.numeric), round, 2))
+```
+
+```{r}
+Merged_PB %>% 
+  filter(str_detect(Measure, "P_to")) %>% 
+  arrange(Site, Taxon)
+
+Merged_PB %>% 
+  filter(str_detect(Measure, "P.ann")) %>% 
+  arrange(desc(average_value))
+
+Merged_PB %>% 
+  filter(str_detect(Measure, "B.ann")) %>% 
+  arrange(desc(average_value))
+```
+
+```{r}
+Annual_Levels<-Merged_PB %>% 
+  summarize(annual_min_g = sum(lower_limit)/1000,
+            annual_max_g = sum(upper_limit)/1000,
+            annual_ave_g = (annual_min_g+annual_max_g)/2,
+         .by = c("Site", "Measure")) %>% 
+  filter(str_detect(Measure, "ann")) %>% 
+  arrange(Measure)
+
+Annual_Levels
+```
+
+# Save Data
+
+## Masses
+
+```{r}
+all_biota_mass<-full_join(C_mass_combined, mass_combined)
+write.csv(all_biota_mass, "1_Ecology-Chapter/1_data-synth/macros-mass_ALLTAXA_5-9-24.csv")
+write.csv(C_mass_combined, "1_Ecology-Chapter/1_data-synth/macros-mass_Chiron_5-9-24.csv")
+
+write.csv(mass_combined, "1_Ecology-Chapter/1_data-synth/macros-mass_NONChiron_5-9-24.csv")
+```
+
+## Production
+
+```{r}
+write.csv(Merged_PB, "1_Ecology-Chapter/1_data-synth/macros_ModeledProductionBiomass_5-9-24.csv")
+```
+

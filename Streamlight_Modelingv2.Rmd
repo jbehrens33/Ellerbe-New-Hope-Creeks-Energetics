@@ -1,0 +1,324 @@
+---
+title: "Stream Light Modeling"
+author: "Jonny Behrens"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+# Set-Up 
+
+A walk through: https://psavoy.github.io/StreamLight/articles/2%20Download%20and%20process%20MODIS%20LAI.html. 
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+knitr::opts_knit$set(root.dir = '')
+
+#clean out environment
+rm(list = ls())
+
+#remotes::install_github('psavoy/StreamLight')
+#remotes::install_github('psavoy/StreamLightUtils')
+#install.packages('StreamPULSE')
+library(pacman)
+
+p_load(StreamPULSE,StreamLight,StreamLightUtils,readr,tidyverse,openxlsx)
+```
+
+# PART 1
+
+Use StreamPULSE to ID our sites and format them CORRECTLY
+
+```{r}
+NC_sites <- StreamPULSE::query_available_data(region = 'NC')$sites
+
+lat_long<-data.frame(Site_ID = c("EllerbeClub", "EllerbeGlenn", "NHC"),
+                     Lat = c(36.0192, 36.0596, 35.9801),
+                     Lon = c(-78.8946, -78.8327, -79.0021))
+
+my_sites <- NC_sites %>% 
+  dplyr::filter(site %in% c('NHC', 'EllerbeGlenn', 'EllerbeClub')) %>%  
+  dplyr::mutate(startDate = as.character('2021-01-01')) %>% 
+  dplyr::select(Site_ID = site, startDate) %>% 
+  left_join(lat_long) %>% #manually update the lat/long numbers
+  data.frame()
+
+```
+
+Create sub-directories 
+
+```{r}
+# create a subdirectory for light stuff
+light_dir <- 'data/'
+
+if(!dir.exists(light_dir))
+  dir.create(light_dir)
+
+# and NLDAS data that we download
+NLDAS_dir <- glue::glue(light_dir, 'NLDAS/')
+
+if(!dir.exists(NLDAS_dir))
+  dir.create(NLDAS_dir)
+```
+
+Bulk download NLDAS data
+
+```{r}
+NLDAS_DL_bulk(save_dir = NLDAS_dir,
+              site_locs = my_sites,
+              startDate = my_sites$startDate)
+ 
+NLDAS_list <- stringr::str_sub(list.files(NLDAS_dir),
+                                1, -11)
+ 
+# The following requires you to input the full file name, different for everyone's computer
+NLDAS_processed <- StreamLightUtils::NLDAS_proc("data/NLDAS/",
+                                                 Site_IDs = NLDAS_list)
+
+# And save it
+saveRDS(NLDAS_processed,
+         'NLDAS_proc.rds')
+```
+
+Create csv that we send to AppEEARS data portal
+
+```{r}
+AppEEARS_sites <- my_sites %>% 
+  dplyr::select(-startDate)
+
+readr::write_csv(AppEEARS_sites,
+                 'data/NLDAS/AppEEARS_sites.csv')
+
+```
+
+Then go to: https://appeears.earthdatacloud.nasa.gov/task/point and make a data request
+
+# PART 2
+
+Unpack the NASA data.
+
+```{r}
+Mod_unpack <- AppEEARS_unpack_QC(zip_dir = "data/NLDAS",
+                                 zip_file = 'NHC_EC_MODIS.zip',
+                                 request_sites = NLDAS_list)
+
+Mod_processed <- AppEEARS_proc(unpacked_LAI = Mod_unpack,
+                               fit_method = 'Gu',
+                               plot = TRUE)
+```
+
+Make driver files
+
+```{r}
+driver_sites <- AppEEARS_sites %>% 
+  dplyr::mutate(epsg_crs = 4326)
+
+driver_dir <- 'data/driver'
+if(!dir.exists(driver_dir))
+  dir.create(driver_dir)
+
+
+driver<-make_driver(site_locs = driver_sites,
+            NLDAS_processed = NLDAS_processed,
+            MOD_processed = Mod_processed)
+#           write_output = TRUE, 
+#           save_dir = 'data/driver')
+
+head(driver)
+
+```
+
+## Azimuth
+
+Calculate azimuth for sites. Thanks to Nick Marzolf for this code.
+
+```{r}
+p_load(nhdplusTools,geosphere)
+
+points <- driver_sites %>% 
+  dplyr::select(Lon, Lat) %>% 
+  as.matrix() %>% 
+  st_multipoint() %>% 
+  st_sfc(crs = 4326) %>% 
+  st_cast('POINT')
+
+
+azimuth_df <- data.frame(Site_ID = character(),
+                         azimuth = numeric())
+for(k in 1:nrow(driver_sites)){
+  site <- driver_sites[k,]
+  
+  point <- site %>% 
+    dplyr::select(Lon, Lat) %>% 
+    as.matrix() %>% 
+    st_multipoint() %>% 
+    st_sfc(crs = 4326) %>% 
+    st_cast('POINT')
+  
+  comid <- discover_nhdplus_id(point)
+  
+  flowline <- navigate_nldi(list(featureSource = 'comid',
+                                 featureID = comid),
+                            mode = 'upstreamTributaries',
+                            distance_km = 2)
+  
+  subset <- subset_nhdplus(comids = as.integer(flowline$UT_flowlines$nhdplus_comid[1]),
+                           nhdplus_data = 'download',
+                           flowline_only = TRUE,
+                           return_data = TRUE,
+                           overwrite = TRUE)
+  
+  flow_coords <- st_coordinates(subset$NHDFlowline_Network)
+  
+  azimuth <- bearing(p1 = flow_coords[1,1:2],
+                     p2 = flow_coords[nrow(flow_coords), 1:2])
+  
+  if(azimuth < 0){azimuth = azimuth + 180}
+  
+  azimuth_df <- azimuth_df %>% 
+    add_row(Site_ID = pull(site, Site_ID),
+            azimuth = azimuth)
+}
+azimuth_df
+
+# Save data
+readr::write_csv(azimuth_df,
+                 'data/azimuths.csv')
+```
+
+Tree height estimates
+
+```{r}
+# Function to extract tree height (we need to fix the function)
+extract_height_v2<-  function (Site_ID, Lat, Lon, site_crs) 
+{
+  #Added the "[1]" because there are multiple paths on my computer and that was giving errors
+  simard2011 <- raster::raster(paste0(.libPaths()[1], "/StreamLightUtils/data/simard2011.tif")) 
+  map_ranges <- raster::setMinMax(simard2011)
+  site_location <- data.frame(Lat, Lon)
+  if (site_crs == 4326) {
+    xy_sf <- sf::st_as_sf(site_location, coords = c("Lon", 
+      "Lat"), crs = site_crs)
+  }
+  else {
+    xy_native <- sf::st_as_sf(site_location, coords = c("Lon", 
+      "Lat"), crs = site_crs)
+    xy_sf <- sf::st_transform(xy_native, crs = 4326)
+  }
+  suppressWarnings(TH <- raster::extract(map_ranges, xy_sf))
+  bound <- setNames(data.frame(Site_ID, Lat, Lon, TH), c("Site_ID", 
+    "Lat", "Lon", "TH"))
+  return(bound)
+}
+
+# Run for all sites
+for(i in 1:nrow(driver_sites)){  
+
+  test_i<- extract_height_v2(
+    Site_ID = driver_sites[i, "Site_ID"], 
+    Lat = driver_sites[i, "Lat"],
+    Lon = driver_sites[i, "Lon"],
+    site_crs = driver_sites[i, "epsg_crs"])
+  
+  write.csv(test_i, glue::glue(getwd(), "/data/tree-height_", driver_sites[i,"Site_ID"], ".csv"))
+}
+
+```
+
+# PART 3
+
+Start by defining important inputs for the model. 
+
+```{r}
+# Define the dataset with all the parameters
+# params<-NC_params %>% # this is what is automatically loaded in, we need to change this!
+#   mutate(Site_ID = str_replace_all(Site_ID, "NC_", "")) %>%
+#   dplyr::filter(str_detect(Site_ID, "NHC"))
+
+# Please verify what overhang should be for ECNG
+params<-read.xlsx("data/NHC-ECGS-ECNG_parameters.xlsx") %>% 
+  #dplyr::filter(str_detect(Site_ID, "NHC|Glenn")) %>% 
+  mutate(Site_ID = str_replace_all(Site_ID, "NC_", "")) 
+
+# Define directories
+save_dir<-"output"
+read_dir<-"data/driver"
+```
+
+Define the function
+
+```{r}
+#Function for batching over multiple sites
+  batch_model <- function(Site, read_dir, save_dir){
+    #Get the model driver
+      driver_file <- readRDS(paste(read_dir, "/", Site, "_driver.rds", sep = ""))
+
+    #Get model parameters for the site
+      site_p <- params[params[, "Site_ID"] == Site, ]
+
+    #Run the model
+      modeled <- stream_light(driver_file, 
+        Lat = site_p[, "Lat"], 
+        Lon = site_p[, "Lon"],
+        channel_azimuth = site_p[, "Azimuth"], 
+        bottom_width = site_p[, "Width"], 
+        BH = site_p[, "BH"],
+        BS = site_p[, "BS"], 
+        WL = site_p[, "WL"], 
+        TH = site_p[, "TH"], 
+        overhang = site_p[, "overhang"],
+        overhang_height = site_p[, "overhang_height"], 
+        x_LAD = site_p[, "x"]) %>% 
+        mutate(Site = Site)
+
+    #Save the output
+      saveRDS(modeled, paste(save_dir, "/", Site, "_modeled-on-", Sys.Date(), "_predicted.rds",  sep = ""))
+
+  } #End batch_model 
+```
+
+Run the function, save output
+
+```{r}
+#Applying the model to all sites
+working_dir<-getwd()
+
+#Running the model
+lapply(params[, "Site_ID"], 
+  FUN = batch_model, 
+  read_dir = read_dir,
+  save_dir = save_dir) 
+
+# Merge together the output
+output_filenames <- list.files(save_dir, pattern="*.rds", full.names = TRUE)
+  
+Merged_Data<-lapply(output_filenames, readRDS) %>% 
+  data.table::rbindlist(use.names = TRUE, fill = TRUE)
+  
+#Take a look at the output
+   head(Merged_Data)
+```
+
+Visualize (asimuth really impacts the shape, consider how NHC number is very different from Phil's...)
+
+```{r}
+plot_data<-Merged_Data %>% 
+  group_by(Site, jday) %>% 
+  mutate(PAR_surface_dailyAve = ave(PAR_surface)) 
+
+combo_plot<- plot_data %>% 
+  ggplot(aes(x=local_time, y=PAR_surface_dailyAve, color = Site)) +
+  geom_point() +
+  theme_classic()
+
+combo_plot  
+ggsave("output/comboplot_1.jpeg")
+```
+
+Save the data
+
+```{r}
+write.csv(plot_data, "output/streamLight_estimates.csv")
+```
+
+
