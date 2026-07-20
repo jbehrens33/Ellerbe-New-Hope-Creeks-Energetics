@@ -145,15 +145,6 @@ discharge_SD<-Discharge_Instant %>%
 #   select(-SD)
 ```
 
-Count of days exceeding (note that there are more years in NHC)
-
-```{r}
-discharge_SD %>% 
-  filter(date <= end_date & date >= start_date) %>% 
-  count(Site, discharge_exceed_1sd, discharge_exceed_2sd) %>% 
-  pivot_wider(names_from = "Site", values_from = "n")
-```
-
 ## Metabolism 
 
 ### Ellerbe Creek
@@ -163,15 +154,11 @@ discharge_SD %>%
 filenames<-list.files(paste0(data_f, "Metabolism_2-2023/data/model_runs/Bayes/daily"),
                       pattern="*.csv", full.names = TRUE) 
 
-# Remove NHC
-files_to_remove <- grep("NHC", filenames)
-filtered_filenames <- filenames[-files_to_remove]
-
 # Combine into a list
-l <- lapply(filtered_filenames, read_csv)
+l <- lapply(filenames, read_csv)
 
 # Clean up names
-short_names<-filtered_filenames %>%
+short_names<-filenames %>%
   str_remove("data/model_runs/Bayes/daily/") %>%
   str_remove(data_f) %>% 
   str_remove(".csv")
@@ -248,7 +235,7 @@ we will flag days that exceed 1 SD.
 
 ```{r}
 dt<-dt_preclean %>% 
-  left_join(select(discharge_SD, c(Site, date, discharge_exceed_1sd))) %>% 
+  left_join(dplyr::select(discharge_SD, c(Site, date, discharge_exceed_1sd))) %>% 
   mutate(Days_Modeled = case_when(is.na(GPP_daily_mean_C) ~ "No Model Output",
                                   GPP_daily_mean < 0 ~ "GPP/ER Unrealistic", 
                                   ER_daily_mean > 0 ~ "GPP/ER Unrealistic",
@@ -269,12 +256,12 @@ Not many of the days, but definitely a few
 
 ```{r}
 dt %>% 
-  filter(date > as.Date("2021-04-01") & date < as.Date("2022-05-01")) %>% 
+  dplyr::filter(date > as.Date("2021-04-01") & date < as.Date("2022-05-01")) %>% 
   count(Days_Modeled, Site) %>% 
   pivot_wider(names_from = "Site", values_from = "n") 
 
 dt %>% 
-  filter(date > as.Date("2021-04-01") & date < as.Date("2022-05-01")) %>% 
+  dplyr::filter(date > as.Date("2021-04-01") & date < as.Date("2022-05-01")) %>% 
   count(Days_Modeled, Site)  %>% 
   mutate(total_count = sum(n), .by = Site) %>%
   mutate(Percent_days = round(100*n/total_count), .keep = "unused") %>% 
@@ -294,7 +281,7 @@ pal_sites<-c('#009E73', '#0072B2', '#D55E00')
 names(pal_sites) <- c('forested site', 'wastewater segment', 'stormwater segment') 
 
 dt %>% 
-  summarize(Site, date, GPP_daily_Rhat, ER_daily_Rhat, K600_daily_Rhat) %>% 
+  dplyr::distinct(Site, date, GPP_daily_Rhat, ER_daily_Rhat, K600_daily_Rhat) %>% 
   pivot_longer(names_to = "Measure", values_to = "Rhat", GPP_daily_Rhat:K600_daily_Rhat) %>% 
   mutate(Site = case_when(str_detect(Site, "orest") ~ "forested site",
                           str_detect(Site, "orm") ~ "stormwater segment",
@@ -308,7 +295,7 @@ dt %>%
 
 ```{r}
 dt %>% 
-  filter(!is.na(K600_daily_Rhat)) %>% 
+  dplyr::filter(!is.na(K600_daily_Rhat)) %>% 
   mutate(Rhat_K600_low = if_else(K600_daily_Rhat < 1.05, 1,0), 
          Rhat_ER_low = if_else(ER_daily_Rhat < 1.05, 1,0), 
          Rhat_GPP_low = if_else(GPP_daily_Rhat < 1.05, 1,0)) %>% 
