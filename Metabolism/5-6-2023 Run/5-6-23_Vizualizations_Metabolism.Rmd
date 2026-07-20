@@ -1,0 +1,405 @@
+---
+title: "Visualize Metab"
+author: "Nicholas Marzolf and Jonny Behrens"
+date: "`r Sys.Date()`"
+knit: (function(inputFile, encoding) {
+      out_dir <- "output";
+      rmarkdown::render(inputFile, encoding=encoding,
+                        output_dir=file.path(dirname(inputFile), out_dir))})
+output:
+  html_document: 
+    theme: cosmo
+---
+
+# Set-Up R Environment
+
+```{r setup, echo = FALSE, warning= FALSE, message=FALSE, results='hide'}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+
+## Set project directory 
+projdir <- getwd() # Make sure you have the R Project open! 
+
+## Clear environment
+rm(list = ls())
+
+## Libraries
+library(pacman)
+p_load(tidyverse,dplyr,ggplot2,tidyr,StreamPULSE,
+       dataRetrieval,lubridate,scales,imputeTS)
+```
+
+# Prep Data
+
+```{r}
+# # assign sites
+# run_sites <- c('NC_NHC')
+# 
+# filenames <- list.files("data/model_runs/Bayes/daily", pattern="*.csv", full.names = TRUE)
+# 
+# l <- lapply(filenames, read_csv)
+# 
+# short_names<-filenames %>%
+#   str_remove("data/model_runs/Bayes/daily/") %>%
+#   str_remove(".csv")
+# 
+# names(l)<-short_names
+# 
+# #bind l together to one larger data.table, by columnname, fill missing with NA
+# dt <- data.table::rbindlist( l, use.names = TRUE, fill = TRUE, idcol=short_names) %>%
+#   rename(source=1) %>%
+#   mutate(Site = if_else(str_detect(source, "NC_NHC"), 'NHC', NA_character_),
+#          .after=1)
+# 
+# write.csv(dt, "data/model_runs/Combined-Daily-Data.csv")
+```
+
+# Download Data
+
+```{r}
+# Set the start and end dates
+start_date <- as.Date("2016-10-01")
+end_date <- as.Date("2022-09-30")
+
+# Full Data
+raw_data<-read.csv("data/model_runs/Combined-Daily-Data.csv") %>% 
+  mutate(date = as.POSIXct(as.Date(date))) %>% 
+  mutate(Net_Metabolism = GPP_mean + ER_mean)
+
+# Clean data
+plot_data<-raw_data %>% 
+  filter(date < end_date) %>%
+  filter(date > start_date) %>% 
+  mutate(date = as.Date(date))
+
+# NHC
+NHC_raw<-plot_data %>% 
+  filter(str_detect(Site, "NHC")) %>% 
+  filter(!is.na(GPP_mean) & !is.na(ER_mean)) %>% 
+  mutate(year = year(date))
+
+NHC_data<-NHC_raw %>% 
+  group_by(year) %>% 
+  mutate(cumGPP = cumsum(GPP_mean),
+         cumER = -1*(cumsum(-1*ER_mean))) %>% 
+  ungroup()
+```
+
+```{r}
+# Create the time series
+time_series_NHC <- seq.Date(start_date, end_date, by = "day") %>% 
+  as.data.frame() %>% 
+  rename(date = 1) %>% 
+  mutate(Site = "NHC") %>% 
+  select(date, Site)
+
+imputed_NHC<-NHC_raw %>% 
+  full_join(time_series_NHC) %>%
+  mutate(year = if_else(is.na(year), year(date), year)) %>% 
+  filter(Site == "NHC") %>% 
+  arrange(desc(date)) %>% 
+  group_by(Site) %>% 
+  imputeTS::na_interpolation(option="linear") %>% 
+  group_by(year) %>% 
+  mutate(cumGPP = cumsum(GPP_mean),
+         cumER = -1*(cumsum(-1*ER_mean))) %>% 
+  ungroup()
+
+```
+
+# Plot Data
+
+## Cumulative Plots
+
+Multiply by 1.25 to convert from oxygen to carbon. Per <https://doi.org/10.1073/pnas.2121976119>.
+
+```{r}
+PNAS_green<-"#7BB97A"
+PNAS_brown<-"#C59883"
+
+scale_date<-scale_x_date(date_breaks = "3 months",
+                 labels = label_date_short(format = c("%Y", "%b", NA, NA)),
+                 expand = c(0.005,0.005)) 
+```
+
+```{r}
+NHC_metab<-NHC_data %>% 
+  full_join(time_series_NHC) %>%
+  mutate_if(is.numeric, ~replace_na(., 0)) %>% 
+  filter(Site %in% c('NHC')) %>%
+  ggplot(., aes(x = as.Date(date))) +
+  geom_area(aes(y = cumGPP*1.25, fill = "GPP"))+
+  geom_area(aes(y = cumER*1.25, fill = "ER"))+
+  theme_classic() +
+  scale_fill_manual(name = element_blank(),
+                   values = alpha(c(PNAS_brown, PNAS_green), 0.8)) +
+  scale_date +
+  ylab(bquote('gC' ~m^-2 ~day^-1)) + 
+  labs(x=element_blank(), title = "NHC") +
+  theme(text = element_text(size = 20))
+
+NHC_metab
+# ggsave("output/NHC_metab.png", width= 10, height= 6)
+
+```
+
+```{r}
+max_data<-NHC_data %>%
+  group_by(Site, year) %>% 
+  summarize(Cmltv_GPP = max(cumGPP),
+            Cmltv_ER = min(cumER)) %>% 
+  mutate(Cmltv_ER = 0 - Cmltv_ER) %>% 
+  pivot_longer(names_to = "Variable", values_to = "Value", Cmltv_GPP:Cmltv_ER)
+
+combined<-max_data %>% 
+  ggplot(aes(x= Variable, y= Value*1.25, fill = Variable)) +
+  geom_col() +
+  facet_wrap(~Site) +
+  scale_fill_manual(name = element_blank(),
+                   values = alpha(c(PNAS_brown, PNAS_green), 0.8)) + 
+  labs(x=element_blank()) +
+  facet_wrap(~year) + 
+  ylab(bquote('Cumulative (gC' ~m^-2 ~yr^-1 *")")) + 
+  theme_classic()
+
+combined
+#ggsave("output/combined_GPP-ER.png")
+```
+
+```{r}
+NHC_metab<-imputed_NHC %>% 
+  full_join(time_series_NHC) %>%
+  mutate_if(is.numeric, ~replace_na(., 0)) %>% 
+  filter(Site %in% c('NHC')) %>%
+  ggplot(., aes(x = as.Date(date))) +
+  geom_area(aes(y = cumGPP*1.25, fill = "GPP"))+
+  geom_area(aes(y = cumER*1.25, fill = "ER"))+
+  theme_classic() +
+  scale_fill_manual(name = element_blank(),
+                   values = alpha(c(PNAS_brown, PNAS_green), 0.8)) +
+  scale_date +
+  ylab(bquote('gC' ~m^-2 ~day^-1)) + 
+  labs(x=element_blank(), title = "NHC") +
+  theme(text = element_text(size = 20))
+
+NHC_metab
+# ggsave("output/NHC_metab.png", width= 10, height= 6)
+
+```
+
+```{r}
+max_data_imputed<-imputed_NHC %>%
+  select(cumGPP, cumER, year, Site) %>% 
+  mutate(Cmltv_GPP = max(cumGPP, na.rm = TRUE),
+         Cmltv_ER_pos = min(cumER, na.rm = TRUE),
+         .by = year) %>% 
+  distinct(Cmltv_GPP, Cmltv_ER_pos, year) %>% 
+  mutate(Cmltv_ER = 0 - Cmltv_ER_pos, .keep = "unused") %>% 
+  pivot_longer(names_to = "Variable", values_to = "Value", c(Cmltv_GPP,Cmltv_ER))
+
+combined_imputed<-max_data_imputed %>% 
+  ggplot(aes(x= Variable, y= Value*1.25, fill = Variable)) +
+  geom_col() +
+  facet_wrap(~year) +
+  scale_fill_manual(name = element_blank(),
+                   values = alpha(c(PNAS_brown, PNAS_green), 0.8)) + 
+  labs(x=element_blank()) +
+  ylab(bquote('Cumulative (gC' ~m^-2 ~yr^-1 *")")) + 
+  theme_classic()
+
+combined_imputed
+#ggsave("output/combined_GPP-ER_imputed.png")
+```
+
+```{r}
+imputed_NHC %>% 
+  group_by(Site, year) %>% 
+  summarize(GPP = max(cumGPP), 
+            ER = min(cumER))
+
+```
+
+## Point Plots
+
+```{r}
+NHC_metab_p<-NHC_data %>% 
+  filter(valid_day == "TRUE") %>% 
+  filter(GPP_daily_mean >= 0) %>% filter(ER_daily_mean <= 0) %>% 
+  ggplot(aes(x = as.Date(date))) +
+  geom_point(aes(y = GPP_daily_mean*1.25, color = "GPP"))+
+  geom_ribbon(aes(ymin= `GPP_daily_2.5pct`*1.25, ymax= `GPP_daily_97.5pct`*1.25, fill = "GPP"))+
+  geom_point(aes(y = ER_daily_mean*1.25, color = "ER"))+
+  geom_ribbon(aes(ymin= `ER_daily_2.5pct`*1.25, ymax= `ER_daily_97.5pct`*1.25, fill = "ER"))+
+  ylim(-25, 5) + 
+  theme_classic() +
+  scale_color_manual(name = element_blank(),
+                   values = alpha(c(PNAS_brown, PNAS_green), 0.8)) + 
+  scale_fill_manual(name = element_blank(),
+                   values = alpha(c(PNAS_brown, PNAS_green), 0.3)) + 
+  scale_date +
+  labs(x=element_blank(), title = "NHC") +
+  ylab(bquote('gC' ~m^-2 ~day^-1)) + 
+  theme(text = element_text(size = 20))
+
+NHC_metab_p
+# ggsave("output/NHC_metabv2.png", width= 10, height= 6)
+
+```
+
+# Gap Fill Exploration
+
+## 2_5 and 97_5 of prior sampling dates
+```{r}
+NHC_data_2_597_5<-NHC_data %>% 
+  filter(GPP_daily_mean >= 0) %>% filter(ER_daily_mean <= 0) %>% 
+  mutate(doy = yday(date)) %>% 
+  group_by(doy) %>% 
+  mutate(GPP_DOY_2_5 = quantile(GPP_mean, 0.025),
+         GPP_DOY_97_5 = quantile(GPP_mean, 0.975),
+         ER_DOY_2_5 = quantile(ER_mean, 0.025),
+         ER_DOY_97_5 = quantile(ER_mean, 0.975))
+```
+
+```{r}
+Compare<-NHC_data_2_597_5 %>%
+  select(c(doy, year, `GPP_daily_2.5pct`, `GPP_daily_97.5pct`, 
+           `ER_daily_2.5pct`, `ER_daily_97.5pct`, GPP_DOY_2_5:ER_DOY_97_5)) %>% 
+  pivot_longer(names_to = "Measure_Type", values_to = "Value", GPP_daily_2.5pct:ER_DOY_97_5) %>% 
+  mutate(ER_GPP = if_else(str_detect(Measure_Type, "GPP"), "GPP", "ER"),
+         PCT = if_else(str_detect(Measure_Type, "2"), "2_5", "97_5"),
+         ER_GPP_PCT = str_c(ER_GPP, PCT, sep = "_")) %>% 
+  ungroup()
+
+options<-distinct(Compare, ER_GPP_PCT)
+
+for(i in 1:nrow(options)){
+  
+  ER_GPP_PCT_i <- as.character(options[i,1])
+    
+  plot_data_i<-Compare %>% 
+    filter(ER_GPP_PCT == ER_GPP_PCT_i) %>% 
+    pivot_wider(names_from = "Measure_Type", values_from = "Value")
+  
+  x<-colnames(plot_data_i)[6]
+  y<-colnames(plot_data_i)[7]
+  
+  plot<-plot_data_i %>%
+    ggplot(aes(x=!!sym(x), y=!!sym(y), color=doy)) +
+    geom_point() +
+    facet_wrap(~year) +
+    theme_classic()
+  
+  print(plot)
+
+}
+```
+
+```{r}
+Range<-NHC_data_2_597_5 %>%
+  select(c(doy, GPP_DOY_2_5:ER_DOY_97_5)) %>%
+  distinct() %>% 
+  full_join(mutate(time_series_NHC, doy = yday(date))) %>%
+  left_join(NHC_data) %>% 
+  mutate(GPP_2_5_final = 1.25*if_else(!is.na(source), `GPP_daily_2.5pct`, GPP_DOY_2_5),
+         GPP_97_5_final = 1.25*if_else(!is.na(source), `GPP_daily_97.5pct`, GPP_DOY_97_5),
+         ER_2_5_final = 1.25*if_else(!is.na(source), `ER_daily_2.5pct`, ER_DOY_2_5),
+         ER_97_5_final = 1.25*if_else(!is.na(source), `ER_daily_97.5pct`, ER_DOY_97_5)) %>% 
+  mutate(GPP_Range_Source = if_else(is.na(source), "Historic IQR Range", "Model"), 
+         ER_Range_Source = if_else(is.na(source), "Historic IQR Range", "Model")) %>% 
+  select(-c(K600_daily_mean:K600_daily_predlog_Rhat, ER_mean:DO_R2_Rhat, warnings, errors)) %>% 
+  mutate(year = year(date)) %>% 
+  filter(str_detect(year, "2021|2022"))
+```
+
+### BEST FIGURE!
+
+```{r}
+IQR_Range<-Range %>% 
+  select(date, year, Site, source, GPP_daily_mean, ER_daily_mean, 
+         GPP_2_5_final:ER_Range_Source) %>% 
+  filter(GPP_Range_Source == "Historic IQR Range") %>% 
+  full_join(time_series_NHC) %>% 
+  mutate(year = year(date)) %>% 
+  filter(str_detect(year, "2021|2022")) %>% 
+  mutate(GPP_Range_Source = if_else(is.na(GPP_2_5_final), NA_character_, GPP_Range_Source)) %>% 
+  ungroup() %>% 
+  mutate(GPP_daily_mean = (GPP_2_5_final+GPP_97_5_final)/2,
+         ER_daily_mean = (ER_2_5_final+ER_97_5_final)/2)
+
+Model_Range<-Range %>% 
+  select(date, year, Site, source, GPP_daily_mean, ER_daily_mean, 
+         GPP_2_5_final:ER_Range_Source) %>% 
+  filter(GPP_Range_Source == "Model") %>% 
+  full_join(time_series_NHC) %>% 
+  mutate(year = year(date)) %>% 
+  filter(str_detect(year, "2021|2022"))
+
+NHC_gap_fill<-ggplot() +
+  # GPP Range
+  geom_ribbon(data=Model_Range, fill = "#7BB97A", alpha = 0.7, 
+              aes(x = as.Date(date), ymin= `GPP_2_5_final`, ymax= `GPP_97_5_final`)) +
+  geom_ribbon(data=IQR_Range, fill = "#9cba9c", alpha = 0.7, 
+              aes(x = as.Date(date), ymin= `GPP_2_5_final`, ymax= `GPP_97_5_final`)) + 
+  # ER Range
+  geom_ribbon(data=Model_Range, fill = "#C59883", alpha = 0.7, 
+              aes(x = as.Date(date), ymin= `ER_2_5_final`, ymax= `ER_97_5_final`)) +
+  geom_ribbon(data=IQR_Range, fill = "#c6b3ab", alpha = 0.7, 
+              aes(x = as.Date(date), ymin= `ER_2_5_final`, ymax= `ER_97_5_final`)) +
+  # Model Output
+  geom_point(data=Model_Range, aes(x = as.Date(date),y = GPP_daily_mean*1.25), 
+                                   color = "#7BB97A")+
+  geom_point(data=Model_Range, aes(x = as.Date(date),y = ER_daily_mean*1.25), 
+                                   color = "#C59883")+
+  # Gap Fill
+  # geom_point(data=IQR_Range, aes(x = as.Date(date),y = GPP_daily_mean*1.25), 
+  #                                  color = "#9cba9c")+
+  # geom_point(data=IQR_Range, aes(x = as.Date(date),y = ER_daily_mean*1.25), 
+  #                                  color = "#c6b3ab")+
+  
+  theme_classic() +
+  scale_date +
+  labs(x=element_blank(), title = "NHC") +
+  ylab(bquote('gC' ~m^-2 ~day^-1)) +
+  theme(text = element_text(size = 16))
+
+NHC_gap_fill
+```
+
+## GLM in same month
+```{r}
+
+```
+
+## Linear Transpose
+```{r}
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

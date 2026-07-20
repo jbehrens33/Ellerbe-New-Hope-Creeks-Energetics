@@ -1,0 +1,556 @@
+---
+title: "Post-Run Analysis"
+author: "Jonny Behrens and Nicholas Marzolf"
+date: "`r Sys.Date()`"
+knit: (function(inputFile, encoding) {
+      out_dir <- "output";
+      rmarkdown::render(inputFile, encoding=encoding,
+                        output_dir=file.path(dirname(inputFile), out_dir))})
+output:
+  html_document: 
+    theme: cosmo
+---
+
+# Set-Up R Environment
+
+```{r setup, echo = FALSE, warning= FALSE, message=FALSE, results='hide'}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+
+## Set project directory 
+projdir <- getwd() # Make sure you have the R Project open! 
+
+## Clear environment
+rm(list = ls())
+
+## Libraries
+library(pacman)
+p_load(tidyverse,StreamPULSE,dataRetrieval,lubridate,scales,glue,ggpubr,ggridges,knitr)
+```
+
+# Merge together yearly data into a combined folder for Bayes
+
+The following code will give an error if it has already been run and the files already are created!
+
+```{r}
+Bayes_data_folder<-"data/model_runs/Bayes/"
+# get a list of all subfolders in the parent folder
+subfolders <- c("daily", "datadaily", "estimates")
+
+# create directory
+combined_dir <- 'data/model_runs/Bayes/combined/'
+dir.create(combined_dir)
+    
+# loop through each subfolder
+for (i in 1:length(subfolders)) {
+
+  # subfolder name
+  subfolder_name<-paste0(Bayes_data_folder, subfolders[i])
+  
+  # get a list of all CSV files in the subfolder
+  csv_files <- list.files(subfolder_name, pattern = ".csv")
+
+  # loop through each CSV file and read it into a dataframe
+  dfs <- list()
+  for (j in 1:length(csv_files)) {
+    df <- read.csv(paste0(subfolder_name, "/", csv_files[j]))
+    dfs[[j]] <- df }
+
+  # combine all dataframes into a single dataframe
+  combined_df <- dplyr::bind_rows(dfs)
+
+  # create a unique filename for the output CSV file
+  output_file <- paste0(str_remove_all(subfolder_name, Bayes_data_folder), "_combined", ".csv")
+
+  # set the working directory back to the parent folder
+ # setwd("..")
+
+  # write the combined dataframe to a new CSV file in the subfolder
+  write.csv(combined_df, file = paste0(Bayes_data_folder, "combined/", output_file), row.names = FALSE)
+
+}
+```
+
+# QA/QC
+
+Evaluate the model fits
+
+```{r}
+# assign sites
+run_sites <- c('NC_NHC_2020-10-01_2021-09-30', 'NC_NHC_2021-10-01_2022-09-30', 'NC_NHC_2022-10-01_2023-03-20')
+
+# Create an empty table
+rating_tbl <- data.frame(
+  site = character(),
+  year = character(),
+  K600_daily_sigma_Rhat = numeric(),
+  err_proc_iid_sigma_Rhat = numeric()
+)
+
+# Populate table
+for(k in 1:length(run_sites)){
+  sitecode <- run_sites[k]
+  
+  daily <- read_csv(glue('data/model_runs/Bayes/daily/{sitecode}_daily.csv'))
+  KQ_overall <- read_csv(glue('data/model_runs/Bayes/KQ_overall/{sitecode}_KQ_overall.csv'))
+  overall <- read_csv(glue('data/model_runs/Bayes/overall/{sitecode}_overall.csv'))
+  
+  length = length(daily$GPP_mean)
+  GPP_neg <- daily %>% 
+    filter(GPP_mean < -0.5) %>% 
+    summarise(GPP_imp_per = n()/length) %>% 
+    pull()
+  
+  ER_pos <- daily %>% 
+    filter(ER_mean < 0.5) %>% 
+    summarise(ER_imp_per = n()/length) %>% 
+    pull()
+  
+  K600_sum <- daily %>% 
+    summarise(meanK = mean(K600_daily_mean, na.rm = TRUE),
+              minK600 = min(K600_daily_mean, na.rm = TRUE),
+              maxK600 = max(K600_daily_mean, na.rm = TRUE)) %>% 
+    mutate(rangeK = maxK600 - minK600)
+  
+  equifin_r2 <- summary(lm(data = daily,
+                           ER_mean ~ K600_daily_mean))[8]
+  
+  rating_tbl <- rating_tbl %>% 
+    add_row(
+      site = sitecode,
+      K600_daily_sigma_Rhat = KQ_overall$K600_daily_sigma_Rhat,
+      err_proc_iid_sigma_Rhat = overall$err_proc_iid_sigma_Rhat) %>% 
+    mutate(
+      RhatL = K600_daily_sigma_Rhat > 1.2 | err_proc_iid_sigma_Rhat > 1.2,
+      RhatH = !RhatL,
+      KrangeL = K600_sum$rangeK > 50,
+      KrangeM = K600_sum$rangeK <= 50 & K600_sum$rangeK > 15,
+      KrangeH = K600_sum$rangeK < 15,
+      GPP_L = GPP_neg > 50,
+      GPP_M = GPP_neg <= 50 & GPP_neg > 25,
+      GPP_H = GPP_neg <= 25,
+      ER_L = ER_pos > 50,
+      ER_M = ER_pos <= 50 & ER_pos > 25,
+      ER_H = ER_pos <= 25
+      )
+}
+
+# View Table
+print(rating_tbl)
+```
+
+#Evaluate DO Modeled vs. Actual
+
+```{r}
+# Download Data
+dt <- read.csv("data/model_runs/Bayes/combined/mod_and_obs_DO_combined.csv") %>%
+  mutate(date = as.Date(date, try.formats = c("%Y-%m-%d"))) %>%
+  mutate(solar.time = ymd_hms(solar.time)) %>% 
+  mutate(Site = 'NHC') %>% 
+  mutate(year = year(date), .after = "date") %>% 
+  mutate(month = month(date), .after = "year")
+```
+
+## Model
+
+A rough linear model does not look so great. Shown below.
+
+```{r}
+# model<-lm(`DO.obs` ~ depth + temp.water + light + discharge, data=na.omit(dt))
+# 
+# summary(model)
+# 
+# dt_fit_added<-dt %>% 
+#   na.omit() %>% 
+#   bind_cols(model$fitted.values) %>% 
+#   rename(last_col = 14)
+# 
+# dt_fit_added %>% 
+#   ggplot(aes(x= `DO.obs`, y=last_col, color=year)) +
+#   geom_point() +
+#   facet_wrap(~month) +
+#   theme_classic() + 
+#   labs(x= "Actual DO Value", y="Modeled DO Value", caption="Separated by Month")
+  
+```
+
+
+## Explore DO 
+
+Observed vs. Modeled DO
+
+```{r}
+# DO<-dt %>% 
+#   filter(!is.na(DO.obs)) %>% filter(!is.na(DO.mod)) %>% 
+#   mutate(month = factor(month)) %>% 
+#   ggscatter(x = "DO.obs", y = "DO.mod", color="month", add = "reg.line") +
+#   stat_cor() +
+#   facet_wrap(~year, scales = "free") +
+#   theme_classic() + 
+#   scale_color_brewer(palette = "Paired")
+# 
+# DO
+```
+
+```{r}
+# DO_Q<-dt %>% 
+#   filter(!is.na(DO.obs)) %>% filter(!is.na(DO.mod)) %>% 
+#   filter(year > 2020) %>% filter(year < 2023) %>% 
+#   mutate(month = factor(month)) %>% 
+#   ggplot() +
+#   geom_point(aes(x=date, y=DO.mod), colour = "blue") +
+#   geom_point(aes(x=date, y=discharge, color = "gray")) +
+#   facet_wrap(~year, ncol=1, scales = "free") +
+#   theme_classic() + labs(title = "DO vs. Q")
+# 
+# DO_depth<-dt %>% 
+#   filter(!is.na(DO.obs)) %>% filter(!is.na(DO.mod)) %>% 
+#   filter(year > 2020) %>% filter(year < 2023) %>% 
+#   mutate(month = factor(month)) %>% 
+#   ggplot() +
+#   geom_point(aes(x=date, y=DO.mod), colour = "blue") +
+#   geom_point(aes(x=date, y=depth, color = "black")) +
+#   facet_wrap(~year, ncol=1, scales = "free") +
+#   theme_classic()+ labs(title = "DO vs. Depth")
+# 
+# DO_temp<-dt %>% 
+#   filter(!is.na(DO.obs)) %>% filter(!is.na(DO.mod)) %>% 
+#   filter(year > 2020) %>% filter(year < 2023) %>% 
+#   mutate(month = factor(month)) %>% 
+#   ggplot() +
+#   geom_point(aes(x=date, y=DO.mod), colour = "blue") +
+#   geom_point(aes(x=date, y=temp.water, color = "green")) +
+#   facet_wrap(~year, ncol=1, scales = "free") +
+#   theme_classic() + labs(title = "DO vs. temp")
+# 
+# DO_light<-dt %>% 
+#   filter(!is.na(DO.obs)) %>% filter(!is.na(DO.mod)) %>% 
+#   filter(year > 2020) %>% filter(year < 2023) %>% 
+#   mutate(month = factor(month)) %>% 
+#   ggplot() +
+#   geom_point(aes(x=date, y=DO.mod), colour = "blue") +
+#   geom_point(aes(x=date, y=light), colour = "orange") +
+#   facet_wrap(~year, ncol=1, scales = "free") +
+#   theme_classic() + labs(title = "DO vs. light")
+# 
+# DO_Q
+# DO_depth
+# DO_temp
+# DO_light
+```
+
+# Explore missing data
+
+First Run 
+
+```{r}
+# load streampulse data
+StreamPULSE_Data_raw<-readRDS("data/prep/NC_NHC_prep.rds")
+
+StreamPULSE_Data<-StreamPULSE_Data_raw$data  %>% 
+  unclass() %>% as.data.frame() %>%
+  mutate(date = as.Date(`solar.time`)) %>% 
+  select(-solar.time) %>% 
+  mutate(Site = "NHC") %>% 
+  group_by(date, Site) %>% 
+  summarise_all(mean)
+
+# Dowload Daily data from first run 
+filenames <- list.files("C:/Users/jrb146/OneDrive - Duke University/Documents/0. Research/0 Ellerbe Creek/R/_Metab_Explore/Metabolism_2-2023/data/model_runs/Bayes/daily", pattern="*.csv", full.names = TRUE)
+l <- lapply(filenames, read_csv)
+
+short_names<-str_remove_all(filenames, "C:/Users/jrb146/OneDrive - Duke University/Documents/0. Research/0 Ellerbe Creek/R/_Metab_Explore/Metabolism_2-2023/data/model_runs/Bayes/daily/|.csv")
+names(l)<-short_names
+
+daily_data <- data.table::rbindlist(l, use.names = TRUE, fill = TRUE, idcol=short_names) %>%
+  rename(source = 1) %>% 
+  mutate(Site = if_else(str_detect(source, "NC_NHC"), 'NHC', NA_character_), .after=1) %>% 
+  mutate(year = year(date), .after = "date") %>% 
+  mutate(month = month(date), .after = "year") %>% 
+  mutate(Run = 1, .after=1)
+
+
+```
+
+Second Run 
+
+```{r}
+#discharge data
+daily_Q_data<-read.csv("data/model_runs/Bayes/combined/datadaily_combined.csv") %>% 
+  mutate(date = as.Date(date, try.formats = c("%Y-%m-%d"))) %>%
+  mutate(Site = "NHC", .after=1) %>% 
+  mutate(year = year(date), .after = "date") %>% 
+  mutate(month = month(date), .after = "year") %>% 
+  mutate(Run = 2, .after=1)
+
+# Dowload Daily data
+daily_data2<-read.csv("data/model_runs/Bayes/combined/daily_combined.csv") %>% 
+  mutate(date = as.Date(date, try.formats = c("%Y-%m-%d"))) %>%
+  mutate(Site = "NHC", .after=1) %>% 
+  mutate(year = year(date), .after = "date") %>% 
+  mutate(month = month(date), .after = "year") %>% 
+  filter(date <= "2023-01-09") %>% 
+  mutate(Run = 2, .after=1)
+```
+
+Let's look at how many missing days are missing estimates.
+
+```{r}
+some_information<-daily_data %>% 
+  filter(Site == "NHC") %>% 
+  mutate(GPP_ER_Missing = if_else(is.na(GPP_mean) & is.na(ER_mean), "2", 
+                              if_else(is.na(GPP_mean) & !is.na(ER_mean), "1-GPP",
+                                  if_else(!is.na(GPP_mean) & is.na(ER_mean), "1-ER",
+                                      if_else(!is.na(GPP_mean) & !is.na(ER_mean), "0", NA_character_)))))
+some_information %>% 
+  group_by(GPP_ER_Missing) %>% count()
+
+some_information2<-daily_data2 %>% 
+  filter(Site == "NHC") %>% 
+  mutate(GPP_ER_Missing = if_else(is.na(GPP_mean) & is.na(ER_mean), "2", 
+                              if_else(is.na(GPP_mean) & !is.na(ER_mean), "1-GPP",
+                                  if_else(!is.na(GPP_mean) & is.na(ER_mean), "1-ER",
+                                      if_else(!is.na(GPP_mean) & !is.na(ER_mean), "0", NA_character_)))))
+some_information2 %>% 
+  group_by(GPP_ER_Missing) %>% count()
+```
+
+Let's look at Rhat differences
+
+```{r}
+# merged<-daily_data %>% 
+#   full_join(daily_data2)
+merged2<-daily_data %>%
+  full_join(daily_data2) %>% 
+  left_join(StreamPULSE_Data) %>% 
+  left_join(select(daily_Q_data, c(Site, date, discharge.daily)))
+  
+Rhat_GPP<-merged2 %>%
+  filter(!is.na(GPP_mean)) %>% 
+  ggplot(aes(x=GPP_Rhat, y=as.character(Run), fill=as.character(Run), color = as.character(Run))) + #update based on your data
+  geom_density_ridges(alpha = 0.5) +
+  theme_classic()
+
+Rhat_GPP
+
+Rhat_ER<-merged2 %>%
+  filter(!is.na(ER_mean)) %>% 
+  ggplot(aes(x=ER_Rhat, y=as.character(Run), fill=as.character(Run), color = as.character(Run))) + #update based on your data
+  geom_density_ridges(alpha = 0.5) +
+  theme_classic()
+
+Rhat_ER
+
+K600_daily_Rhat<-merged2 %>%
+  filter(!is.na(ER_mean)) %>% 
+  ggplot(aes(x=K600_daily_Rhat, y=as.character(Run), fill=as.character(Run), color = as.character(Run))) + #update based on your data
+  geom_density_ridges(alpha = 0.5) +
+  theme_classic()
+
+K600_daily_Rhat
+```
+
+```{r}
+missing_modeled_wide<-merged2 %>% 
+  filter(Run == 1) %>% 
+  filter(is.na(GPP_mean) & !is.na(Site) & !is.na(year)) %>% 
+  mutate(DO_status = if_else(is.na(DO.obs), "Missing DO", "Has DO")) %>% 
+  select(Run:date, DO_status, `DO.obs`:`discharge.daily`) 
+
+missing_modeled<-missing_modeled_wide %>% 
+  pivot_longer(names_to = "measure", values_to = "value", 5:11) 
+  
+t0<-missing_modeled_wide %>% 
+  group_by(DO_status) %>% count()
+
+t1<-missing_modeled %>% 
+  filter(is.na(value)) %>% 
+  group_by(measure, DO_status) %>% 
+  count()
+
+t2<-missing_modeled %>% 
+  filter(!is.na(value)) %>% 
+  group_by(measure, DO_status) %>% 
+  count()
+
+t3<-merged2 %>% 
+  mutate(DO_status = if_else(is.na(DO.obs), "Missing DO", "Has DO")) %>% 
+  filter(is.na(GPP_mean) & !is.na(Site) & !is.na(year)) %>%
+  filter(!is.na(DO.obs)) %>% 
+  select(Run:date, DO_status, `DO.obs`:`discharge.daily`) %>% 
+  pivot_longer(names_to = "measure", values_to = "value", 5:11) %>%  
+  filter(is.na(value)) %>% 
+  group_by(measure, DO_status) %>% 
+  count()
+
+pander::pander(t0,caption="^ Which have DO")
+pander::pander(t1,caption="^ Count of values that are NA (bad data)")
+pander::pander(t2,caption="^ Count of values that ARE NOT NA (good data)")
+pander::pander(t3,caption="^ Count where DO isn't missing")
+
+```
+
+## Let's look at missing data
+
+Merge together annotated data
+
+```{r}
+# Download Annotated data
+annotated<-read.csv("data/model_runs/Bayes/combined/datadaily_annotated_combined.csv") %>% 
+  mutate(date = as.Date(date, tryFormats = "%m/%d/%Y")) %>%
+  mutate(Site = "NHC", .after=1) %>% 
+  mutate(year = year(date), .after = "date") %>% 
+  mutate(month = month(date), .after = "year") %>% 
+  mutate(Run = 2, .after=1)
+
+Merge3<-merged2 %>% 
+  filter(Run == 2) %>% 
+  left_join(annotated, by= "date") %>% 
+  mutate(Bayes_status = if_else(is.na(GPP_mean), "Model Inconclusive", " Model Conclusive")) %>% 
+  mutate(Discharge_Data = if_else(is.na(discharge), "Missing Discharge Data", "Have Discharge Data"))
+
+```
+
+```{r}
+t4<-Merge3 %>% 
+  group_by(data.check, Bayes_status) %>% 
+  count() %>% 
+  arrange(desc(Bayes_status))
+
+pander::pander(t4,caption="^ Data Status: Bayes Output")
+
+t5<-Merge3 %>% 
+  group_by(Bayes_status, Discharge_Data) %>% 
+  count() %>% 
+  arrange(desc(Bayes_status))
+
+pander::pander(t5,caption="^ Data Status: Discharge Availability")
+
+t6<-Merge3 %>% 
+  filter(Bayes_status == "Model Inconclusive") %>% 
+  group_by(Bayes_status, data.check, Discharge_Data) %>% 
+  count() %>% 
+  arrange(desc(Discharge_Data))
+
+pander::pander(t6,caption="^ Data Status: Discharge Availability")
+
+```
+
+
+
+# Visualize
+
+## Prep Data
+
+```{r}
+# # assign sites
+# run_sites <- c('NC_NHC')
+# 
+# filenames <- list.files("data/model_runs/Bayes/daily", pattern="*.csv", full.names = TRUE)
+# 
+# l <- lapply(filenames, read_csv)
+# 
+# short_names<-filenames %>%
+#   str_remove("data/model_runs/Bayes/daily/") %>%
+#   str_remove(".csv")
+# 
+# names(l)<-short_names
+# 
+# #bind l together to one larger data.table, by columnname, fill missing with NA
+# dt <- data.table::rbindlist( l, use.names = TRUE, fill = TRUE, idcol=short_names) %>%
+#   rename(source=1) %>%
+#   mutate(Site = if_else(str_detect(source, "NC_NHC"), 'NHC', NA_character_),
+#          .after=1)
+# 
+# write.csv(dt, "data/model_runs/Combined-Daily-Data.csv")
+```
+
+
+# Download Data
+
+```{r}
+data_raw<-read.csv("data/model_runs/Combined-Daily-Data.csv") %>% 
+  mutate(date = as.POSIXct(as.Date(date))) %>% 
+  mutate(year = year(date), .after = date)
+
+plot_data<-data_raw %>% 
+  filter(date < "2022-04-10") %>% # only looking at 2021
+  filter(date > "2021-04-10") %>% 
+  group_by(Site) %>% 
+  filter(!is.na(GPP_mean)) %>% 
+  mutate(cumGPP = cumsum(GPP_mean),
+         cumER = -1*(cumsum(-1*ER_mean)))
+```
+
+# QA/QC
+
+Count of days with no data
+
+```{r}
+missing_days<-data_raw %>% 
+  group_by(year, valid_day) %>%
+  count() %>% 
+  ggplot(aes(x="", y=n, fill=valid_day)) +
+  geom_col() + 
+  geom_text(aes(label = n), position = position_stack(vjust=0.5)) +
+  facet_wrap(~year) +
+  coord_polar(theta = "y") + 
+  theme_void() + labs(title = "Days with Data")
+
+missing_days
+```
+
+
+# Plot Data
+
+## Cumulative Plots
+
+```{r}
+NHC_metab<-plot_data %>% 
+  filter(Site %in% c('NHC')) %>%
+  ggplot(., aes(x = as.Date(date))) +
+  geom_area(aes(y = cumGPP, fill = "GPP"))+
+  geom_area(aes(y = cumER, fill = "ER"))+
+  ylim(-2000, 500) + 
+  theme_classic() +
+  scale_fill_manual(name = element_blank(),
+                   values = alpha(c('#C76C05', "#208D01"), 0.8)) + 
+  scale_x_date(date_breaks = "1 month",
+                 labels = label_date_short(format = c("%Y", "%b", NA, NA)),
+                 expand = c(0.005,0.005)) +
+  labs(x=element_blank(), y=element_blank(), title = "NHC") +
+  theme(text = element_text(size = 20))
+
+NHC_metab
+ggsave("output/NHC_metab.png", width= 10, height= 6)
+
+```
+
+## Point Plots
+
+```{r}
+NHC_metab_p<-plot_data %>% 
+  filter(Site %in% c('NHC')) %>%
+  filter(valid_day == "TRUE") %>% 
+  filter(GPP_daily_mean >= 0) %>% filter(ER_daily_mean <= 0) %>% 
+  ggplot(., aes(x = as.Date(date))) +
+  geom_point(aes(y = GPP_daily_mean, color = "GPP"))+
+  geom_ribbon(aes(ymin= `GPP_daily_2.5pct`, ymax= `GPP_daily_97.5pct`, fill = "GPP"))+
+  geom_point(aes(y = ER_daily_mean, color = "ER"))+
+  geom_ribbon(aes(ymin= `ER_daily_2.5pct`, ymax= `ER_daily_97.5pct`, fill = "ER"))+
+  ylim(-25, 5) + 
+  theme_classic() +
+  scale_color_manual(name = element_blank(),
+                   values = alpha(c('#C76C05', "#208D01"), 0.8)) + 
+  scale_fill_manual(name = element_blank(),
+                   values = alpha(c('#C76C05', "#208D01"), 0.3)) + 
+  scale_x_date(date_breaks = "1 month",
+                 labels = label_date_short(format = c("%Y", "%b", NA, NA)),
+                 expand = c(0.005,0.005)) +
+  labs(x=element_blank(), y=element_blank(), title = "NHC") +
+  theme(text = element_text(size = 20))
+
+NHC_metab_p
+ggsave("output/NHC_metabv2.png", width= 10, height= 6)
+
+```
+

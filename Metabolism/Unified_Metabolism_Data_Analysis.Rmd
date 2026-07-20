@@ -1,0 +1,577 @@
+---
+title: "Metabolism_Unified"
+author: "Jonny Behrens"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+# Overview
+
+This code cleans up the metabolism data, ran on a few different days.
+
+The raw data (and code for each day ran) is saved in a subfolder where this code is saved.
+
+# Set Up Environment
+
+```{r setup, echo = FALSE, warning= FALSE, message=FALSE, results='hide'}
+# Set working directory. Ensure the .here file is stored in desired working directory
+knitr::opts_knit$set(root.dir = here::here())
+
+# Some knit settings 
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+
+## Clear environment
+rm(list = ls())
+
+## Libraries
+library(pacman)
+p_load(dplyr,ggplot2,tidyr,StreamPULSE,treemapify,ggpmisc,
+       dataRetrieval,lubridate,scales,imputeTS,zoo, ggpubr, tidyverse)
+```
+
+```{r}
+# Set the start and end dates
+start_date <- as.Date("2021-04-01")
+end_date <- as.Date("2022-03-31")
+
+# Set colors
+PNAS_green<-"#7BB97A"
+PNAS_brown<-"#C59883"
+
+# Custom date breaks for time series data
+scale_date<-scale_x_date(date_breaks = "1 month",
+                 labels = label_date_short(format = c("%Y", "%b", NA, NA)),
+                 expand = c(0.005,0.005)) 
+
+scale_date2<-scale_x_date(date_breaks = "2 months",
+                 labels = label_date_short(format = c("%Y", "%b", NA, NA)),
+                 expand = c(0.005,0.005)) 
+```
+
+# Load and Clean Data
+
+```{r}
+data_f<-"Metabolism/"
+```
+
+## Flow Data
+
+### Instantaneous
+
+```{r}
+Discharge_Instant<-read_csv("Metabolism/Discharge_INSTANT_Clean_2024-3-15.csv") %>% 
+    mutate(Year = year(Date_UTC)) %>% 
+    mutate(Site = case_when(site == "nhc" ~ "forested",
+                          site == "ecgs" ~ "wastewater dominated",
+                          site == "ecng" ~ "stormwater dominated"))
+```
+
+Find SD for calendar year at each site
+
+```{r}
+discharge_SD<-Discharge_Instant %>% 
+  mutate(SD = sd(InstantDischarge_m3s, na.rm = T),
+            .by = c("Site", "Year")) %>% 
+  summarize(max_Q = max(InstantDischarge_m3s, na.rm = T), 
+         min_Q = min (InstantDischarge_m3s, na.rm = T),
+         Difference = max_Q - min_Q, 
+         .by = c("Site", "Date_UTC", "SD")) %>% 
+  mutate(discharge_exceed_1sd = if_else(Difference > SD, "Exceed 1 SD", "Does Not Exceed 1 SD"),
+         discharge_exceed_2sd = if_else(Difference > 2*SD, "Exceed 2 SD", "Does Not Exceed 2 SD")) %>% 
+  rename(date = Date_UTC)
+```
+
+
+### Daily: Ellerbe Gage
+
+```{r}
+# # Load in file names
+# filenames<-list.files(paste0(data_f, "Metabolism_2-2023/data/model_runs/Bayes/datadaily"),
+#                       pattern="*.csv", full.names = TRUE) 
+# 
+# # Remove NHC
+# files_to_remove <- grep("NHC", filenames)
+# filtered_filenames <- filenames[-files_to_remove]
+# 
+# # Combine into a list
+# l <- lapply(filtered_filenames, read_csv)
+# 
+# # Clean up names
+# short_names<-filtered_filenames %>%
+#   str_remove("data/model_runs/Bayes/datadaily/") %>%
+#   str_remove(data_f) %>% 
+#   str_remove(".csv")
+# 
+# names(l)<-short_names
+# 
+# # bind into 1 data.table, by columnname, fill missing with NA
+# EC_Q <- data.table::rbindlist( l, use.names = TRUE, fill = TRUE, idcol=short_names) %>%
+#   rename(source=1) %>%
+#   mutate(Site = if_else(str_detect(source, 'NC_EllerbeGlenn'), 'ECGS',
+#                         if_else(str_detect(source, 'NC_EllerbeClub'), 'ECNG', NA_character_)),
+#          .after=1)
+```
+
+### Daily: NHC
+
+```{r}
+# filenames<-list.files(paste0(data_f, "5-6-2023 Run/data/model_runs/Bayes/datadaily"), 
+#                         pattern="*.csv", full.names = TRUE)
+# 
+# l<-lapply(filenames, read_csv)
+# 
+# short_names<-filenames %>%
+#   str_remove("data/model_runs/Bayes/datadaily/") %>%
+#   str_remove(data_f) %>% 
+#   str_remove(".csv")
+# 
+# names(l)<-short_names
+# 
+# NHC_Q <- data.table::rbindlist( l, use.names = TRUE, fill = TRUE, idcol=short_names) %>%
+#   rename(source=1) %>%
+#   mutate(Site = if_else(str_detect(source, "NC_NHC"), 'NHC', NA_character_),
+#          .after=1)
+```
+
+```{r}
+# discharge<-EC_Q %>% 
+#   full_join(NHC_Q) %>% 
+#   mutate(Site = case_when(Site == "NHC" ~ "forested",
+#                           Site == "ECGS" ~ "wastewater dominated",
+#                           Site == "ECNG" ~ "stormwater dominated")) %>% 
+#   select(Site, date, discharge.daily) %>% 
+#   full_join(discharge_SD) %>% 
+#   mutate(discharge_exceed_2sd = if_else(discharge.daily > 2*SD, "Exceed 2 SD", "Does Not Exceed 2 SD")) %>% 
+#   select(-SD)
+```
+
+Count of days exceeding (note that there are more years in NHC)
+
+```{r}
+discharge_SD %>% 
+  filter(date <= end_date & date >= start_date) %>% 
+  count(Site, discharge_exceed_1sd, discharge_exceed_2sd) %>% 
+  pivot_wider(names_from = "Site", values_from = "n")
+```
+
+## Metabolism 
+
+### Ellerbe Creek
+
+```{r}
+# Load in file names
+filenames<-list.files(paste0(data_f, "Metabolism_2-2023/data/model_runs/Bayes/daily"),
+                      pattern="*.csv", full.names = TRUE) 
+
+# Remove NHC
+files_to_remove <- grep("NHC", filenames)
+filtered_filenames <- filenames[-files_to_remove]
+
+# Combine into a list
+l <- lapply(filtered_filenames, read_csv)
+
+# Clean up names
+short_names<-filtered_filenames %>%
+  str_remove("data/model_runs/Bayes/daily/") %>%
+  str_remove(data_f) %>% 
+  str_remove(".csv")
+
+names(l)<-short_names
+
+# bind into 1 data.table, by columnname, fill missing with NA
+EC_dt <- data.table::rbindlist( l, use.names = TRUE, fill = TRUE, idcol=short_names) %>%
+  rename(source=1) %>%
+  mutate(Site = if_else(str_detect(source, 'NC_EllerbeGlenn'), 'ECGS',
+                        if_else(str_detect(source, 'NC_EllerbeClub'), 'ECNG', NA_character_)),
+         .after=1)
+```
+
+### New Hope Creek
+
+```{r}
+filenames<-list.files(paste0(data_f, "5-6-2023 Run/data/model_runs/Bayes/daily"), 
+                        pattern="*.csv", full.names = TRUE)
+
+l<-lapply(filenames, read_csv)
+
+short_names<-filenames %>%
+  str_remove("data/model_runs/Bayes/daily/") %>%
+  str_remove(data_f) %>% 
+  str_remove(".csv")
+
+names(l)<-short_names
+
+NHC_dt <- data.table::rbindlist( l, use.names = TRUE, fill = TRUE, idcol=short_names) %>%
+  rename(source=1) %>%
+  mutate(Site = if_else(str_detect(source, "NC_NHC"), 'NHC', NA_character_),
+         .after=1)
+```
+
+### Merge Together and Clean
+
+One question - should we replace unrealistic values (neg GPP, pos ER) with zero 
+(as done below), or remove them all together from the dataset 
+(equivalent to a day when the model didn't converge)?
+
+```{r}
+# Create the time series, to fill missing days
+days <- seq.Date(min(NHC_dt$date), max(EC_dt$date), by = "day")
+
+sites<- c("wastewater dominated", "forested", "stormwater dominated") 
+
+time_series_all<-expand.grid(date = days, Site = sites) %>% 
+  arrange(date)
+  
+# Merge together with some cleaning
+dt_preclean<-NHC_dt %>% 
+  full_join(EC_dt) %>% 
+  mutate(Site = case_when(Site == "NHC" ~ "forested",
+                          Site == "ECGS" ~ "wastewater dominated",
+                          Site == "ECNG" ~ "stormwater dominated")) %>% 
+  full_join(time_series_all) %>%
+  # Replace unrealistic values (neg GPP and pos ER) with zero
+  # Then multiply to convert from units of oxygen to carbon
+  mutate(GPP_daily_mean_C = if_else(GPP_daily_mean <= 0, 0, 1.25*GPP_daily_mean),
+         ER_daily_mean_C = if_else(ER_daily_mean >= 0, 0, 1.25*ER_daily_mean),
+         Net_Metabolism_C = GPP_daily_mean_C + ER_daily_mean_C, # calculate Net metabolism
+         .after = date) %>% 
+  mutate(Days_Modeled = if_else(is.na(GPP_daily_mean_C), "No Model Output", "Model Converged")) %>% 
+  mutate(year = year(date)) %>% 
+  mutate(doy = yday(date), .after = date)
+```
+
+### Remove high Q days
+
+High flow is defined as being a discharge value that is greater than 1 standard deviations above that site's average discharge.
+
+we will flag days that exceed 1 SD. 
+
+```{r}
+dt<-dt_preclean %>% 
+  left_join(select(discharge_SD, c(Site, date, discharge_exceed_1sd))) %>% 
+  mutate(Days_Modeled = case_when(is.na(GPP_daily_mean_C) ~ "No Model Output",
+                                  GPP_daily_mean < 0 ~ "GPP/ER Unrealistic", 
+                                  ER_daily_mean > 0 ~ "GPP/ER Unrealistic",
+                                  discharge_exceed_1sd == "Exceed 1 SD" 
+                                                    ~ "Exceeds Discharge Threshold", 
+                                  .default = "Passed"))
+
+# NAs for days that do not pass (or for which it wasn't modeled)
+dt_filtered<-dt %>% 
+  mutate(across(
+    .cols = GPP_daily_mean_C:K600_daily_predlog_Rhat,
+    .fns = ~ ifelse(Days_Modeled == "Passed", ., NA),
+    .names = "{.col}"
+  ))
+```
+
+Not many of the days, but definitely a few
+
+```{r}
+dt %>% 
+  filter(date > as.Date("2021-04-01") & date < as.Date("2022-05-01")) %>% 
+  count(Days_Modeled, Site) %>% 
+  pivot_wider(names_from = "Site", values_from = "n") 
+
+dt %>% 
+  filter(date > as.Date("2021-04-01") & date < as.Date("2022-05-01")) %>% 
+  count(Days_Modeled, Site)  %>% 
+  mutate(total_count = sum(n), .by = Site) %>%
+  mutate(Percent_days = round(100*n/total_count), .keep = "unused") %>% 
+  pivot_wider(names_from = "Site", values_from = "Percent_days")
+```
+
+# Check Model Performance
+
+## Rhat
+
+As a first pass check, let's check the Rhats of the model outputs.
+
+I like how Rhats are all below 1.05. 
+
+```{r Rhat}
+pal_sites<-c('#009E73', '#0072B2', '#D55E00')
+names(pal_sites) <- c('forested site', 'wastewater segment', 'stormwater segment') 
+
+dt %>% 
+  summarize(Site, date, GPP_daily_Rhat, ER_daily_Rhat, K600_daily_Rhat) %>% 
+  pivot_longer(names_to = "Measure", values_to = "Rhat", GPP_daily_Rhat:K600_daily_Rhat) %>% 
+  mutate(Site = case_when(str_detect(Site, "orest") ~ "forested site",
+                          str_detect(Site, "orm") ~ "stormwater segment",
+                          str_detect(Site, "aste") ~ "wastewater segment")) %>% 
+  ggplot(aes(x = Rhat, color = Site)) + 
+  geom_density(position = "dodge") + 
+  theme_pubr(legend = "bottom") + 
+  facet_wrap(~Measure) + 
+  scale_color_manual(values = pal_sites)
+```
+
+```{r}
+dt %>% 
+  filter(!is.na(K600_daily_Rhat)) %>% 
+  mutate(Rhat_K600_low = if_else(K600_daily_Rhat < 1.05, 1,0), 
+         Rhat_ER_low = if_else(ER_daily_Rhat < 1.05, 1,0), 
+         Rhat_GPP_low = if_else(GPP_daily_Rhat < 1.05, 1,0)) %>% 
+  summarize(n = n(), 
+            K600 = sum(Rhat_K600_low), 
+            ER = sum(Rhat_K600_low), 
+            GPP = sum(Rhat_K600_low)) %>% 
+  pivot_longer(names_to = "measure", values_to = "value", K600:GPP) %>% 
+  mutate(Percent = 100*value/n)
+```
+
+## K600 vs. ER
+
+Next, let's look at the relationship between K600 and ER.  
+
+ideally, if we are not having issues with equifinality, we would expect K600 and ER to not have a clear linear relationship. 
+
+```{r K600ER}
+dt %>% 
+  mutate(Site = case_when(str_detect(Site, "orest") ~ "forested site",
+                          str_detect(Site, "orm") ~ "stormwater segment",
+                          str_detect(Site, "aste") ~ "wastewater segment")) %>% 
+  ggplot(aes(x = ER_daily_mean, y = K600_daily_mean)) + 
+  geom_point(color = "lightgrey") + 
+  theme_pubr(legend = "none") + 
+  stat_poly_eq(use_label(c("R2"))) +
+  stat_poly_line() + 
+  facet_wrap(~Site, scales = "free")
+```
+
+# Gap Fill
+
+## See Number of Gaps
+
+We can fix it with transmutation and other methods!
+
+```{r}
+P_missing_data<-dt_filtered %>% 
+  filter(date <= end_date & date >= start_date) %>% 
+  mutate_all(~ifelse(is.na(.), 0, .)) %>% 
+  ggplot(aes(x=as.Date(date), y=GPP_daily_mean_C, color = Days_Modeled)) +
+  geom_point() + 
+  scale_date +
+  scale_color_manual(values = c("No Model Output" = "red",
+                                "GPP/ER Unrealistic" = "purple",
+                                "Exceeds Discharge Threshold" = "orange",
+                                "Passed" = "blue")) + 
+  facet_wrap(~Site, ncol = 1) +
+  theme_pubr() + 
+  theme(legend.position = "bottom") + labs(x = NULL)
+
+P_missing_data
+```
+
+## Create Quantile Range and Transmuted Values (separately)
+
+```{r}
+dt_2_597_5<-dt_filtered %>% 
+  ungroup() %>% 
+  # Clean up data
+  filter(GPP_daily_mean_C >= 0) %>% filter(ER_daily_mean_C <= 0) %>% 
+  group_by(doy, Site) %>% 
+  # Calculate the 2.5% and 97.5% quantile ranges, using daily data
+  mutate(GPP_DOY_2_5_C_day = quantile(GPP_daily_mean_C, 0.025, names = FALSE),
+         GPP_DOY_97_5_C_day = quantile(GPP_daily_mean_C, 0.975,names = FALSE),
+         ER_DOY_2_5_C_day = quantile(ER_daily_mean_C, 0.025,names = FALSE),
+         ER_DOY_97_5_C_day = quantile(ER_daily_mean_C, 0.975,names = FALSE), 
+         NetMetab_DOY_2_5_C_day = quantile(Net_Metabolism_C, 0.025,names = FALSE),
+         NetMetab_DOY_97_5_C_day = quantile(Net_Metabolism_C, 0.975,names = FALSE), 
+         .after = Net_Metabolism_C) %>% 
+  # Keep unique rows, for each site and doy
+  distinct(Site,doy, GPP_DOY_2_5_C_day,GPP_DOY_97_5_C_day,ER_DOY_2_5_C_day,
+           ER_DOY_97_5_C_day, NetMetab_DOY_2_5_C_day,NetMetab_DOY_97_5_C_day) %>% 
+  # Calculate the 2.5% and 97.5% quantile ranges, based on 3-day rolling average
+  group_by(Site) %>% 
+  arrange(Site, doy) %>% 
+  mutate(GPP_DOY_2_5_C = rollmean(GPP_DOY_2_5_C_day, k=3, fill=NA, align = "right"),
+         GPP_DOY_97_5_C = rollmean(GPP_DOY_97_5_C_day, k=3, fill=NA, align = "right"),
+         ER_DOY_2_5_C = rollmean(ER_DOY_2_5_C_day, k=3, fill=NA, align = "right"),
+         ER_DOY_97_5_C = rollmean(ER_DOY_97_5_C_day, k=3, fill=NA, align = "right"),
+         NetMetab_DOY_2_5_C = rollmean(NetMetab_DOY_2_5_C_day, k=3, fill=NA, align = "right"),
+         NetMetab_DOY_97_5_C = rollmean(NetMetab_DOY_97_5_C_day, k=3, fill=NA, align = "right"),
+         .after = doy) %>% 
+  mutate(across(c(GPP_DOY_2_5_C, GPP_DOY_97_5_C, GPP_DOY_2_5_C_day, GPP_DOY_97_5_C_day),
+                ~ifelse(. < 0, 0, round(.,2)))) %>% 
+  mutate(across(c(ER_DOY_2_5_C, ER_DOY_97_5_C, ER_DOY_2_5_C_day, ER_DOY_97_5_C_day), 
+                ~ifelse(. > 0, 0, round(.,2)))) %>% 
+  ungroup()
+
+```
+
+#### Compare Modeled vs. Historic Quantile Range
+
+Let's see how closely the 2.5% and 97.5% quantile of the multi-year data compares to a specific day's quantile range.
+
+```{r}
+Compare<-dt_filtered %>% 
+  left_join(dt_2_597_5)  %>%
+  select(c(Site, doy, year, `GPP_daily_2.5pct`, `GPP_daily_97.5pct`, 
+           `ER_daily_2.5pct`, `ER_daily_97.5pct`, GPP_DOY_2_5_C:ER_DOY_97_5_C)) %>% 
+  pivot_longer(names_to = "Measure_Type", values_to = "Value", GPP_daily_2.5pct:ER_DOY_97_5_C) %>% 
+  mutate(ER_GPP = if_else(str_detect(Measure_Type, "GPP"), "GPP", "ER"),
+         PCT = if_else(str_detect(Measure_Type, "2"), "2_5", "97_5"),
+         ER_GPP_PCT = str_c(ER_GPP, PCT, sep = "_")) %>% 
+  ungroup()
+
+options<-distinct(Compare, ER_GPP_PCT)
+
+for(i in 1:nrow(options)){
+  
+  ER_GPP_PCT_i <- as.character(options[i,1])
+    
+  plot_data_i<-Compare %>% 
+    filter(ER_GPP_PCT == ER_GPP_PCT_i) %>% 
+    pivot_wider(names_from = "Measure_Type", values_from = "Value")
+  
+  x<-colnames(plot_data_i)[7]
+  y<-colnames(plot_data_i)[8]
+  
+  plot<-plot_data_i %>%
+    filter(Site == "forested") %>% 
+    ggplot(aes(x=!!sym(x)*1.25, y=!!sym(y), color=doy, shape = Site)) +
+    geom_point(alpha = 0.5) +
+    facet_wrap(~year) +
+    theme_classic()
+  
+  print(plot)
+
+}
+```
+
+## Final Data
+
+```{r}
+Range<- dt_filtered %>% 
+  mutate(year = year(date),
+         doy = yday(date)) %>% 
+  # Merge together datasets
+  select(-c(GPP_mean:ER_Rhat, DO_R2_mean:DO_R2_Rhat, K600_daily_mean:errors)) %>% 
+  left_join(dt_2_597_5) %>% 
+  # Calculate a transmuted (linear) value for each observation
+  arrange(Site, date) %>% 
+  # Transmute Means
+  mutate(across(c(GPP_daily_mean_C, ER_daily_mean_C, Net_Metabolism_C), 
+                ~na_interpolation(., option = "linear"), .names = "{col}_Transmuted"),
+         .after = Net_Metabolism_C) %>% 
+  # Transmute Ranges
+  mutate(across(c(GPP_daily_2.5pct,GPP_daily_97.5pct, ER_daily_2.5pct,ER_daily_97.5pct), 
+                ~na_interpolation(1.25*., option = "linear"), .names = "{col}_C_Transmuted")) %>%
+  # Create mid-point for DOY data
+  mutate(GPP_DOY_mid_C = (GPP_DOY_2_5_C + GPP_DOY_97_5_C)/2, 
+         ER_DOY_mid_C = (ER_DOY_2_5_C + ER_DOY_97_5_C)/2,
+         NetMetab_DOY_mid_C = (NetMetab_DOY_2_5_C + NetMetab_DOY_97_5_C)/2) %>% 
+  # Re-arrange
+  select(source, Site, date, doy, year, discharge_exceed_1sd, 
+         contains("_C"), -contains("5_C_day"), Days_Modeled) %>% 
+  select(order(names(.))) %>%   
+  # Select Final Number
+  mutate(GPP_Daily_NHC_C = if_else(is.na(GPP_daily_mean_C), GPP_DOY_mid_C, GPP_daily_mean_C),
+         GPP_2_5_NHC_C = if_else(is.na(GPP_daily_mean_C), GPP_DOY_2_5_C, GPP_daily_2.5pct_C_Transmuted),
+         GPP_97_5_NHC_C = if_else(is.na(GPP_daily_mean_C), GPP_DOY_97_5_C, GPP_daily_97.5pct_C_Transmuted),
+         ER_Daily_NHC_C = if_else(is.na(ER_daily_mean_C), ER_DOY_mid_C, ER_daily_mean_C),
+         ER_2_5_NHC_C = if_else(is.na(ER_daily_mean_C), ER_DOY_2_5_C, ER_daily_2.5pct_C_Transmuted),
+         ER_97_5_NHC_C = if_else(is.na(ER_daily_mean_C), ER_DOY_97_5_C, ER_daily_97.5pct_C_Transmuted),
+         NetMetab_Daily_NHC_C = if_else(is.na(Net_Metabolism_C), NetMetab_DOY_mid_C, Net_Metabolism_C),
+         NetMetab_2_5_NHC_C = if_else(is.na(Net_Metabolism_C), NetMetab_DOY_2_5_C, 
+                                      GPP_daily_2.5pct_C_Transmuted + ER_daily_2.5pct_C_Transmuted),
+         NetMetab_97_5_NHC_C = if_else(is.na(Net_Metabolism_C), NetMetab_DOY_97_5_C, 
+                                       GPP_daily_97.5pct_C_Transmuted + ER_daily_97.5pct_C_Transmuted),
+         .after = doy) %>% 
+  mutate(GPP_Daily_Final_C = if_else(Site == "forested", GPP_Daily_NHC_C, GPP_daily_mean_C_Transmuted), 
+         GPP_2_5_Final_C = if_else(Site == "forested", GPP_2_5_NHC_C, GPP_daily_2.5pct_C_Transmuted), 
+         GPP_97_5_Final_C = if_else(Site == "forested", GPP_97_5_NHC_C, GPP_daily_97.5pct_C_Transmuted), 
+         ER_Daily_Final_C = if_else(Site == "forested", ER_Daily_NHC_C, ER_daily_mean_C_Transmuted), 
+         ER_2_5_Final_C = if_else(Site == "forested", ER_2_5_NHC_C, ER_daily_2.5pct_C_Transmuted), 
+         ER_97_5_Final_C = if_else(Site == "forested", ER_97_5_NHC_C, ER_daily_97.5pct_C_Transmuted),
+         NetMetab_Daily_Final_C = if_else(Site == "forested", NetMetab_Daily_NHC_C, Net_Metabolism_C_Transmuted), 
+         NetMetab_2_5_Final_C = if_else(Site == "forested", NetMetab_2_5_NHC_C, 
+                                        GPP_daily_2.5pct_C_Transmuted + ER_daily_2.5pct_C_Transmuted), 
+         NetMetab_97_5_Final_C = if_else(Site == "forested", NetMetab_97_5_NHC_C, 
+                                         GPP_daily_97.5pct_C_Transmuted + ER_daily_97.5pct_C_Transmuted),
+         .after = doy) %>% 
+  mutate(Data_Source = if_else(Site == "forested", 
+                            if_else(is.na(GPP_daily_mean_C), "Historic Quantile Range", "Model Output"), 
+                            if_else(is.na(GPP_daily_mean_C), "Transmuted", "Model Output"))) %>% 
+  # Clean-up
+  mutate(across(c(GPP_Daily_Final_C, GPP_2_5_Final_C, GPP_97_5_Final_C), ~ifelse(. < 0, 0, .))) %>% 
+  mutate(across(c(ER_Daily_Final_C, ER_2_5_Final_C, ER_97_5_Final_C), ~ifelse(. > 0, 0, .))) %>% 
+  mutate(across(c(NetMetab_Daily_Final_C, NetMetab_2_5_Final_C, NetMetab_97_5_Final_C), ~ifelse(. > 0, 0, .))) %>% 
+  filter(str_detect(year, "2021|2022"))
+```
+
+Save the data
+
+```{r}
+write.csv(Range, paste0(data_f, "Daily-Metabolism_OUTPUT_MERGED.csv"))
+```
+
+Here's a visualization to make it easy to see how the GPP gaps have been filled. 
+
+```{r}
+Range %>% 
+  filter(date >= start_date & date <= end_date) %>%  
+  ggplot(aes(x=date, y=GPP_Daily_Final_C, color = Days_Modeled)) + 
+  geom_point() + 
+  facet_wrap(~factor(Site,levels=c("forested","wastewater dominated","stormwater dominated")), 
+             ncol = 1) + 
+  scale_color_manual(values = c("No Model Output" = "red",
+                                "GPP/ER Unrealistic" = "green",
+                                "Exceeds Discharge Threshold" = "orange",
+                                "Passed" = "darkblue")) +
+  theme_pubr(legend = "right") + 
+  scale_x_date(date_breaks = "2 months",
+                 labels = label_date_short(format = c("%Y", "%b", NA, NA)),
+                 expand = c(0.005,0.005)) 
+```
+
+# Model Inputs 
+
+## Load Input Data
+
+```{r}
+# Load in file names
+filenames<-list.files(paste0(data_f, "Metabolism_2-2023/data/model_runs/Bayes/mod_and_obs_DO"),
+                      pattern="*.csv", full.names = TRUE) 
+
+# Remove NHC
+files_to_remove <- grep("NHC", filenames)
+filtered_filenames <- filenames[-files_to_remove]
+
+# NHC filenames
+NHC_filenames<-list.files(paste0(data_f, "5-6-2023 Run/data/model_runs/Bayes/mod_and_obs_DO"),
+                      pattern="*.csv", full.names = TRUE) 
+
+filenames_combined<-c(filtered_filenames, NHC_filenames)
+  
+# Combine into a list
+l <- lapply(filenames_combined, read_csv)
+
+# Clean up names
+short_names<-filenames_combined %>%
+  str_remove("data/model_runs/Bayes/mod_and_obs_DO/") %>%
+  str_remove(data_f) %>% 
+  str_remove(".csv")
+
+names(l)<-short_names
+
+# bind into 1 data.table, by columnname, fill missing with NA
+inputs <- data.table::rbindlist(l, use.names = TRUE, fill = TRUE, idcol=short_names) %>%
+  rename(source=1) %>%
+  mutate(Site = if_else(str_detect(source, "NC_NHC"), 'forested',
+                    if_else(str_detect(source, 'NC_EllerbeGlenn'), 'wastewater dominated',
+                        if_else(str_detect(source, 'NC_EllerbeClub'), 'stormwater dominated',
+                                NA_character_))),
+         .after=1) %>% 
+  group_by(Site, date) %>% 
+  mutate(Discharge_Ave = mean(discharge, na.rm = TRUE))
+  
+```
+
+### Save input data
+
+```{r}
+write.csv(inputs, paste0(output_f, "Daily-Metabolism_INPUT_MERGED.csv"))
+```
+

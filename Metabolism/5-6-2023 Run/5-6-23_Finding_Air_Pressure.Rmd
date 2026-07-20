@@ -1,0 +1,197 @@
+---
+title: "Air Pressure"
+author: "Jonny Behrens"
+date: "`r Sys.Date()`"
+knit: (function(inputFile, encoding) {
+      out_dir <- "output";
+      rmarkdown::render(inputFile, encoding=encoding,
+                        output_dir=file.path(dirname(inputFile), out_dir))})
+output:
+  html_document: 
+    theme: cosmo
+---
+
+# Set-Up R Environment
+
+```{r setup, echo = FALSE, warning= FALSE, message=FALSE, results='hide'}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+
+## Set project directory 
+projdir <- getwd() # Make sure you have the R Project open! 
+
+## Clear environment
+rm(list = ls())
+
+## Libraries
+library(pacman)
+p_load(tidyverse,rnoaa, ggpmisc,imputeTS)
+```
+
+# Explore stations
+
+Download RDU air pressure data
+
+```{r}
+stations<-isd_stations_search(lat = 35.9806, lon=-79.0022, radius= 75)
+
+years=c(2016:2023)
+
+list<-list() # make an empty list
+
+ for (i in 1: length(years)) {
+   local_data<-lcd(station = "72306013722", year = years[i]) %>% 
+     select(date, name, source, hourlystationpressure, hourlyprecipitation)
+   
+   list[[i]] <- local_data    }
+   
+RDU_data <- do.call(rbind, list)
+
+write.csv(RDU_data, "data/rating_curves/RDU-air-pressure_precip_data.csv")
+```
+
+download streampulse data
+
+```{r}
+waterpressure_NHC_SP_raw <- read_csv("data/rating_curves/waterpressure_NHC_SP.csv")
+
+waterpressure_NHC_SP<-waterpressure_NHC_SP_raw %>% 
+  filter(variable == "AirPres_kPa") %>% 
+  filter(DateTime_UTC <= "2023-03-20") %>% 
+  rename(date = DateTime_UTC)
+```
+
+```{r}
+waterpressure_NHC_SP_normal<-waterpressure_NHC_SP %>% 
+  filter(value <= 106)
+
+waterpressure_NHC_SP_high<-waterpressure_NHC_SP %>% 
+  filter(value >= 106)
+
+RDU_data_prepped<-RDU_data %>% 
+  mutate(value = as.numeric(hourlystationpressure)*3.38638) %>% # convert inHg to kPa
+  select(date, value) %>%
+  distinct(date, .keep_all = TRUE) %>% 
+  filter(!is.na(value)) %>% 
+  mutate(variable = "RDU_Air_Pressure") %>% 
+  filter(date >= "2016-09-14")
+  
+Merged_normal<- RDU_data_prepped %>% 
+  full_join(select(waterpressure_NHC_SP_normal, c(date, value, variable))) %>% 
+  mutate(date = ymd_hms(date)) %>% 
+  pivot_wider(names_from = "variable", values_from = "value")
+  
+Merged_questionable<- RDU_data_prepped %>% 
+  full_join(select(waterpressure_NHC_SP_high, c(date, value, variable))) %>% 
+  mutate(date = ymd_hms(date)) %>% 
+  pivot_wider(names_from = "variable", values_from = "value")
+```
+
+```{r}
+dot_plot2<-Merged_normal %>% 
+  ggplot(aes(x=RDU_Air_Pressure, y= AirPres_kPa)) + 
+  geom_point() + 
+  stat_poly_line() +
+  stat_poly_eq(use_label(c("eq", "R2"))) +
+  theme_classic()
+
+dot_plot2
+
+dot_plot3<-Merged_questionable %>% 
+  ggplot(aes(x=RDU_Air_Pressure, y= AirPres_kPa)) + 
+  geom_point() + 
+  stat_poly_line() +
+  stat_poly_eq(use_label(c("eq", "R2"))) +
+  theme_classic()
+
+dot_plot3
+```
+
+```{r}
+lm1<-lm(AirPres_kPa ~ RDU_Air_Pressure, data= Merged_normal)
+summary(lm1)
+
+lm2<-lm(AirPres_kPa ~ RDU_Air_Pressure, data= Merged_questionable)
+summary(lm2)
+```
+
+# Let's fill in those gaps!
+
+```{r}
+# Create data frame with time intervals
+time_seq<-seq(as.POSIXct("2016-09-14 00:00:00"), as.POSIXct("2023-03-20 23:59:59"), by="15 mins") %>% 
+  as.data.frame() %>% 
+  rename(date = 1)
+
+Gap_fill_merged<-Merged_normal %>% 
+  mutate(RDU_Air_kPa_transformed = RDU_Air_Pressure*0.985336 + 2.234711) %>% 
+  full_join(time_seq) %>%
+  arrange(desc(date)) %>% 
+  mutate(Gap_filled_with_SP = if_else(is.na(AirPres_kPa),
+                                      na_interpolation(AirPres_kPa, 
+                                                       option="linear", maxgap=40),
+                                      AirPres_kPa)) %>%
+  mutate(AirPres_Gap_filled_with_SP_RDU = if_else(is.na(Gap_filled_with_SP),
+                                      na_interpolation(RDU_Air_kPa_transformed, 
+                                                       option="linear", maxgap=60),
+                                      Gap_filled_with_SP)) %>% 
+  # mutate(AirPres_kPa2 = if_else(is.na(AirPres_kPa), 
+  #                                na_interpolation(RDU_Air_kPa_transformed, option="linear", maxgap=48), 
+  #                                AirPres_kPa)) %>% 
+  
+  mutate(Data_Source = if_else(!is.na(AirPres_kPa), "StreamPULSE data",
+                          if_else(!is.na(Gap_filled_with_SP), "Interpolated from StreamPULSE data",
+                              if_else(!is.na(AirPres_Gap_filled_with_SP_RDU),
+                                      "Interpolated from RDU data", "No data")))) %>% 
+  mutate(times_to_keep = if_else(str_detect(date, ":00:|:15:|:30:|:45:"), "keep", "remove")) %>% 
+  filter(times_to_keep == "keep") %>% 
+  select(date, AirPres_Gap_filled_with_SP_RDU, Data_Source) %>% 
+  arrange(desc(date))
+
+Gap_fill_merged %>% group_by(Data_Source) %>% count()
+```
+
+# Save the data
+
+```{r}
+water_pressure<-waterpressure_NHC_SP_raw %>% 
+  pivot_wider(names_from = "variable", values_from = "value") %>%
+  select(DateTime_UTC, WaterPres_kPa) %>% 
+  filter(!is.na(WaterPres_kPa))
+
+precip<-RDU_data %>%   
+  mutate(DateTime_UTC = round(date, "hours")) %>% 
+  select(DateTime_UTC, hourlyprecipitation) %>%
+  distinct(DateTime_UTC, .keep_all = TRUE)
+
+Air_Water_Pressure<-Gap_fill_merged %>% 
+  rename(DateTime_UTC = date) %>% 
+  full_join(water_pressure) %>% 
+  left_join(precip)
+
+Air_Water_Pressure<-read.csv("data/rating_curves/air-water_gap-filled_pressure.csv")
+```
+
+
+# Explore how well the gaps were filled
+
+```{r}
+gaps_filled1<-Gap_fill_merged %>% 
+  mutate(year = year(date)) %>% 
+     filter(date < as.Date("2018-10-15")) %>% 
+     filter(date > as.Date("2018-10-05")) %>%   ggplot(aes(x=date, y=AirPres_Gap_filled_with_SP_RDU, color=Data_Source)) +
+  geom_point() +
+  theme_classic()
+
+gaps_filled2<-Gap_fill_merged %>% 
+  mutate(year = year(date)) %>% 
+  filter(year < 2019) %>% 
+  ggplot(aes(x=date, y=AirPres_Gap_filled_with_SP_RDU, color=Data_Source)) +
+  geom_point() +
+  theme_classic()
+  
+gaps_filled1
+gaps_filled2
+```
+
+
+

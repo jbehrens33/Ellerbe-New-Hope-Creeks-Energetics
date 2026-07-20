@@ -1,0 +1,435 @@
+---
+title: "durham_metab"
+author: "Nicholas Marzolf and Jonny Behrens"
+date: "`r Sys.Date()`"
+knit: (function(inputFile, encoding) {
+      out_dir <- "output";
+      rmarkdown::render(inputFile, encoding=encoding,
+                        output_dir=file.path(dirname(inputFile), out_dir))})
+output:
+  html_document: 
+    theme: cosmo
+---
+
+# Set-Up R Environment
+
+```{r setup, echo = FALSE, warning= FALSE, message=FALSE, results='hide'}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+
+## Set project directory 
+projdir <- getwd() # Make sure you have the R Project open! 
+
+## Clear environment
+rm(list = ls())
+
+## Libraries
+library(pacman)
+p_load(tidyverse,dplyr,ggplot2,tidyr,StreamPULSE,
+       dataRetrieval,lubridate,scales,imputeTS)
+```
+
+# Prep Data
+
+```{r}
+# # assign sites
+# run_sites <- c('NC_NHC', 'NC_EllerbeGlenn', 'NC_EllerbeClub')
+# 
+# filenames <- list.files("data/model_runs/Bayes/daily", pattern="*.csv", full.names = TRUE)
+# 
+# l <- lapply(filenames, read_csv)
+# 
+# short_names<-filenames %>%
+#   str_remove("data/model_runs/Bayes/daily/") %>%
+#   str_remove(".csv")
+# 
+# names(l)<-short_names
+# 
+# #bind l together to one larger data.table, by columnname, fill missing with NA
+# dt <- data.table::rbindlist( l, use.names = TRUE, fill = TRUE, idcol=short_names) %>%
+#   rename(source=1) %>%
+#   mutate(Site = if_else(str_detect(source, "NC_NHC"), 'NHC',
+#                     if_else(str_detect(source, 'NC_EllerbeGlenn'), 'ECGS',
+#                         if_else(str_detect(source, 'NC_EllerbeClub'), 'ECNG', NA_character_))),
+#          .after=1)
+# 
+# write.csv(dt, "data/model_runs/Combined-Daily-Data.csv")
+```
+
+```{r}
+# Set the start and end dates
+start_date <- as.Date("2021-04-01")
+end_date <- as.Date("2022-03-31")
+
+PNAS_green<-"#7BB97A"
+PNAS_brown<-"#C59883"
+
+scale_date<-scale_x_date(date_breaks = "1 month",
+                 labels = label_date_short(format = c("%Y", "%b", NA, NA)),
+                 expand = c(0.005,0.005)) 
+```
+
+# Site Specific
+```{r}
+# Create the time series
+time_series_all <- seq.Date(start_date, end_date, by = "day") %>% 
+  as.data.frame() %>% 
+  rename(date = 1) %>% 
+  mutate(Site = "ECGS", Site2 = "NHC", Site3 = "ECNG") %>% 
+  pivot_longer(names_to = "Name", values_to = "Site", Site:Site3) %>% 
+  select(date, Site)
+
+time_series_ECGS_NHC <- time_series_all %>% 
+  filter(str_detect(Site, "NHC|ECGS"))
+
+time_series_ECGS_ECNG <- time_series_all %>% 
+  filter(str_detect(Site, "ECNG|ECGS"))
+
+```
+
+```{r}
+# Full Data
+raw_data<-read.csv("data/model_runs/Combined-Daily-Data.csv") %>% 
+  mutate(date = as.POSIXct(as.Date(date))) %>% 
+  mutate(Net_Metabolism = GPP_mean + ER_mean)
+
+# Clean data
+plot_data<-raw_data %>% 
+  filter(date <= end_date) %>%
+  filter(date >= start_date) %>% 
+  mutate(date = as.Date(date)) %>% 
+  filter(!is.na(GPP_daily_mean) & !is.na(ER_daily_mean)) %>% 
+  filter(GPP_daily_mean >= 0 & ER_daily_mean <= 0)
+
+```
+
+```{r}
+sites_data<-plot_data %>% 
+  arrange(Site, date) %>%
+  select(-c(DO_R2_mean:DO_R2_Rhat,K600_daily_mean:K600_daily_predlog_Rhat)) %>% 
+  group_by(Site) %>% 
+  mutate(cumGPP = cumsum(1.25*GPP_daily_mean),
+         cumER = cumsum(1.25*ER_daily_mean)) %>% 
+  full_join(time_series_all) %>% 
+  ungroup()
+```
+
+```{r}
+sites<-c("NHC", "ECGS", "ECNG")
+
+for(i in 1:length(sites)){
+  
+  plot_data_i<-sites_data %>% 
+    mutate_if(is.numeric, ~replace_na(., 0)) %>% 
+    filter(Site == sites[i])
+
+  plot<-plot_data_i %>% 
+    ggplot() +
+    geom_area(aes(x = date, y = cumGPP, fill = "GPP"))+
+    geom_area(aes(x = date, y = cumER, fill = "ER"))+
+    theme_classic() +
+    scale_fill_manual(name = element_blank(),
+                     values = alpha(c(PNAS_brown, PNAS_green), 0.8)) +
+    scale_date +
+    ylab(bquote('gC' ~m^-2 ~day^-1)) + 
+    labs(x=element_blank(), title = sites[i]) +
+    theme(text = element_text(size = 20))
+  
+  print(plot)
+}
+
+```
+
+# Combined
+
+```{r}
+# ECGS and NHC
+overlapping_days_ECGS_NHC_raw<-plot_data %>% 
+  filter(str_detect(Site, "NHC|ECG")) %>% 
+  group_by(date, Site) %>%
+  distinct(date, .keep_all = TRUE) %>%
+  group_by(date) %>% 
+  mutate(count = n()) %>% 
+  filter(str_detect(count, "2")) %>% 
+  group_by(Site) %>% 
+  filter(!is.na(GPP_mean)) 
+
+overlapping_days_ECGS_NHC<-overlapping_days_ECGS_NHC_raw %>% 
+  group_by(Site) %>% 
+  arrange(date, Site) %>% 
+  mutate(cumGPP = cumsum(GPP_mean),
+         cumER = -1*(cumsum(-1*ER_mean))) %>% 
+  ungroup()
+
+# ECGS and ECNG
+overlapping_days_ECGS_ECNG_raw<-plot_data %>% 
+  filter(str_detect(Site, "ECN|ECG")) %>% 
+  group_by(date, Site) %>%
+  distinct(date, .keep_all = TRUE) %>%
+  group_by(date) %>% 
+  mutate(count = n()) %>% 
+  filter(str_detect(count, "2")) %>% 
+  group_by(Site) %>% 
+  filter(!is.na(GPP_mean)) 
+
+overlapping_days_ECGS_ECNG<-overlapping_days_ECGS_ECNG_raw %>% 
+  group_by(Site) %>% 
+  arrange(date, Site) %>% 
+  mutate(cumGPP = cumsum(GPP_mean),
+         cumER = -1*(cumsum(-1*ER_mean))) %>% 
+  ungroup()
+```
+
+```{r}
+# imputed data
+imputed_NHC<-overlapping_days_ECGS_NHC_raw %>% 
+  full_join(time_series_ECGS_NHC) %>% 
+  filter(Site == "NHC") %>% 
+  arrange(desc(date)) %>% 
+  group_by(Site) %>% 
+  imputeTS::na_interpolation(option="linear")
+
+imputed_ECGS<-overlapping_days_ECGS_NHC_raw %>% 
+  full_join(time_series_ECGS_NHC) %>% 
+  filter(Site == "ECGS") %>% 
+  arrange(desc(date)) %>% 
+  group_by(Site) %>% 
+  imputeTS::na_interpolation(option="linear")
+
+imputed_ECNG<-overlapping_days_ECGS_ECNG_raw %>% 
+  full_join(time_series_ECGS_ECNG) %>% 
+  filter(Site == "ECNG") %>% 
+  arrange(desc(date)) %>% 
+  group_by(Site) %>% 
+  imputeTS::na_interpolation(option="linear")
+
+overlapping_days_imputed_ECGS_NHC<-imputed_ECGS %>% 
+  full_join(imputed_NHC) %>% 
+  mutate(cumGPP = cumsum(GPP_mean),
+         cumER = -1*(cumsum(-1*ER_mean))) %>% 
+  ungroup()
+
+overlapping_days_imputed_ECGS_ECNG<-imputed_ECGS %>% 
+  full_join(imputed_ECNG) %>% 
+  mutate(cumGPP = cumsum(GPP_mean),
+         cumER = -1*(cumsum(-1*ER_mean))) %>% 
+  ungroup()
+```
+
+# Plot Data
+
+## Cumulative Plots
+
+Multiply by 1.25 to convert from oxygen to carbon. Per <https://doi.org/10.1073/pnas.2121976119>.
+
+```{r}
+NHC_metab<-overlapping_days_ECGS_NHC %>% 
+  full_join(time_series_ECGS_NHC) %>%
+  mutate_if(is.numeric, ~replace_na(., 0)) %>% 
+  filter(Site %in% c('NHC')) %>%
+  ggplot(., aes(x = as.Date(date))) +
+  geom_area(aes(y = cumGPP*1.25, fill = "GPP"))+
+  geom_area(aes(y = cumER*1.25, fill = "ER"))+
+  ylim(-2000, 500) + 
+  theme_classic() +
+  scale_fill_manual(name = element_blank(),
+                   values = alpha(c(PNAS_brown, PNAS_green), 0.8)) +
+  scale_date +
+  ylab(bquote('gC' ~m^-2 ~day^-1)) + 
+  labs(x=element_blank(), title = "NHC") +
+  theme(text = element_text(size = 20))
+
+ECGS_metab<-overlapping_days_ECGS_NHC %>% 
+  full_join(time_series_ECGS_NHC) %>%
+  mutate_if(is.numeric, ~replace_na(., 0)) %>% 
+  filter(Site %in% c('ECGS')) %>%
+  ggplot(., aes(x = as.Date(date))) +
+  geom_area(aes(y = cumGPP*1.25, fill = "GPP"))+
+  geom_area(aes(y = cumER*1.25, fill = "ER"))+
+  ylim(-2000, 500) + 
+  theme_classic() +
+  scale_fill_manual(name = element_blank(),
+                   values = alpha(c(PNAS_brown, PNAS_green), 0.8)) + 
+  scale_date +
+  ylab(bquote('gC' ~m^-2 ~day^-1)) + 
+  labs(x=element_blank(), title = "ECGS") +
+  theme(text = element_text(size = 20))
+
+ECNG_metab<-overlapping_days_ECGS_ECNG %>% 
+  full_join(time_series_ECGS_ECNG) %>%
+  mutate_if(is.numeric, ~replace_na(., 0)) %>% 
+  filter(Site %in% c('ECNG')) %>%
+  ggplot(., aes(x = as.Date(date))) +
+  geom_area(aes(y = cumGPP*1.25, fill = "GPP"))+
+  geom_area(aes(y = cumER*1.25, fill = "ER"))+
+  ylim(-2000, 500) + 
+  theme_classic() +
+  scale_fill_manual(name = element_blank(),
+                   values = alpha(c(PNAS_brown, PNAS_green), 0.8)) + 
+  scale_date +
+  ylab(bquote('gC' ~m^-2 ~day^-1)) + 
+  labs(x=element_blank(), title = "ECNG") +
+  theme(text = element_text(size = 20))
+
+NHC_metab
+# ggsave("output/NHC_metab.png", width= 10, height= 6)
+
+ECGS_metab
+# ggsave("output/ECGS_metab.png", width= 10, height= 6)
+
+ECNG_metab
+# ggsave("output/ECNG_metab.png", width= 10, height= 6)
+
+```
+
+```{r}
+max_data<-overlapping_days_ECGS_NHC %>%
+  group_by(Site) %>% 
+  summarize(Cummulative_GPP = max(cumGPP),
+            Cummulative_ER = min(cumER)) %>% 
+  mutate(Cummulative_ER = 0 - Cummulative_ER) %>% 
+  pivot_longer(names_to = "Variable", values_to = "Value", 2:3)
+
+combined<-max_data %>% 
+  ggplot(aes(x= Variable, y= Value*1.25, fill = Variable)) +
+  geom_col() +
+  facet_wrap(~Site) +
+  scale_fill_manual(name = element_blank(),
+                   values = alpha(c(PNAS_brown, PNAS_green), 0.8)) + 
+  labs(x=element_blank()) +
+  ylab(bquote('Cumulative (gC' ~m^-2 ~yr^-1 *")")) + 
+  theme_classic()
+
+combined
+#ggsave("output/combined_GPP-ER.png")
+```
+
+```{r}
+max_data_imputed<-overlapping_days_imputed_ECGS_NHC %>%
+  group_by(Site) %>% 
+  summarize(Cummulative_GPP = max(cumGPP),
+            Cummulative_ER = min(cumER)) %>% 
+  mutate(Cummulative_ER = 0 - Cummulative_ER) %>% 
+  pivot_longer(names_to = "Variable", values_to = "Value", 2:3)
+
+combined_imputed<-max_data_imputed %>% 
+  ggplot(aes(x= Variable, y= Value*1.25, fill = Variable)) +
+  geom_col() +
+  facet_wrap(~Site) +
+  scale_fill_manual(name = element_blank(),
+                   values = alpha(c(PNAS_brown, PNAS_green), 0.8)) + 
+  labs(x=element_blank()) +
+  ylab(bquote('Cumulative (gC' ~m^-2 ~yr^-1 *")")) + 
+  theme_classic()
+
+combined_imputed
+#ggsave("output/combined_GPP-ER_imputed.png")
+```
+
+```{r}
+max_data_imputed<-overlapping_days_imputed_ECGS_ECNG %>%
+  group_by(Site) %>% 
+  summarize(Cummulative_GPP = max(cumGPP),
+            Cummulative_ER = min(cumER)) %>% 
+  mutate(Cummulative_ER = 0 - Cummulative_ER) %>% 
+  pivot_longer(names_to = "Variable", values_to = "Value", 2:3)
+
+combined_imputedv2<-max_data_imputed %>% 
+  ggplot(aes(x= Variable, y= Value*1.25, fill = Variable)) +
+  geom_col() +
+  facet_wrap(~Site) +
+  scale_fill_manual(name = element_blank(),
+                   values = alpha(c(PNAS_brown, PNAS_green), 0.8)) + 
+  labs(x=element_blank()) +
+  ylab(bquote('Cumulative (gC' ~m^-2 ~yr^-1 *")")) + 
+  theme_classic()
+
+combined_imputedv2
+#ggsave("output/combined_GPP-ER_imputed.png")
+```
+
+```{r}
+overlapping_days_imputed_ECGS_NHC %>% 
+  group_by(Site) %>% 
+  summarize(GPP = max(cumGPP), 
+            ER = min(cumER))
+
+overlapping_days_imputed_ECGS_ECNG %>% 
+  group_by(Site) %>% 
+  summarize(GPP = max(cumGPP), 
+            ER = min(cumER))
+```
+
+
+## Point Plots
+
+```{r}
+NHC_metab_p<-overlapping_days_ECGS_NHC %>% 
+  filter(Site %in% c('NHC')) %>%
+  filter(valid_day == "TRUE") %>% 
+  filter(GPP_daily_mean >= 0) %>% filter(ER_daily_mean <= 0) %>% 
+  ggplot(., aes(x = as.Date(date))) +
+  geom_point(aes(y = GPP_daily_mean*1.25, color = "GPP"))+
+  geom_ribbon(aes(ymin= `GPP_daily_2.5pct`*1.25, ymax= `GPP_daily_97.5pct`*1.25, fill = "GPP"))+
+  geom_point(aes(y = ER_daily_mean*1.25, color = "ER"))+
+  geom_ribbon(aes(ymin= `ER_daily_2.5pct`*1.25, ymax= `ER_daily_97.5pct`*1.25, fill = "ER"))+
+  ylim(-25, 5) + 
+  theme_classic() +
+  scale_color_manual(name = element_blank(),
+                   values = alpha(c(PNAS_brown, PNAS_green), 0.8)) + 
+  scale_fill_manual(name = element_blank(),
+                   values = alpha(c(PNAS_brown, PNAS_green), 0.3)) + 
+  scale_date +
+  labs(x=element_blank(), title = "NHC") +
+  ylab(bquote('gC' ~m^-2 ~day^-1)) + 
+  theme(text = element_text(size = 20))
+
+ECGS_metab_p<-overlapping_days_ECGS_NHC %>% 
+  filter(Site %in% c('ECGS')) %>%
+  filter(valid_day == "TRUE") %>% 
+  filter(GPP_daily_mean >= 0) %>% filter(ER_daily_mean <= 0) %>% 
+  ggplot(., aes(x = as.Date(date))) +
+  geom_point(aes(y = GPP_daily_mean*1.25, color = "GPP"))+
+  geom_ribbon(aes(ymin= `GPP_daily_2.5pct`*1.25, ymax= `GPP_daily_97.5pct`*1.25, fill = "GPP"))+
+  geom_point(aes(y = ER_daily_mean*1.25, color = "ER"))+
+  geom_ribbon(aes(ymin= `ER_daily_2.5pct`*1.25, ymax= `ER_daily_97.5pct`*1.25, fill = "ER"))+
+  ylim(-25, 5) + 
+  theme_classic() +
+  scale_color_manual(name = element_blank(),
+                   values = alpha(c(PNAS_brown, PNAS_green), 0.8)) + 
+  scale_fill_manual(name = element_blank(),
+                   values = alpha(c(PNAS_brown, PNAS_green), 0.3)) + 
+  scale_date +
+  labs(x=element_blank(), title = "ECGS") +
+  ylab(bquote('gC' ~m^-2 ~day^-1)) + 
+  theme(text = element_text(size = 20))
+
+ECNG_metab_p<-overlapping_days_ECGS_ECNG %>% 
+  filter(Site %in% c('ECNG')) %>%
+  filter(valid_day == "TRUE") %>% 
+  filter(GPP_daily_mean >= 0) %>% filter(ER_daily_mean <= 0) %>% 
+  ggplot(., aes(x = as.Date(date))) +
+  geom_point(aes(y = GPP_daily_mean*1.25, color = "GPP"))+
+  geom_ribbon(aes(ymin= `GPP_daily_2.5pct`*1.25, ymax= `GPP_daily_97.5pct`*1.25, fill = "GPP"))+
+  geom_point(aes(y = ER_daily_mean*1.25, color = "ER"))+
+  geom_ribbon(aes(ymin= `ER_daily_2.5pct`*1.25, ymax= `ER_daily_97.5pct`*1.25, fill = "ER"))+
+  ylim(-25, 5) + 
+  theme_classic() +
+  scale_color_manual(name = element_blank(),
+                   values = alpha(c(PNAS_brown, PNAS_green), 0.8)) + 
+  scale_fill_manual(name = element_blank(),
+                   values = alpha(c(PNAS_brown, PNAS_green), 0.3)) + 
+  scale_date +
+  labs(x=element_blank(), title = "ECNG") +
+  ylab(bquote('gC' ~m^-2 ~day^-1)) + 
+  theme(text = element_text(size = 20))
+
+NHC_metab_p
+# ggsave("output/NHC_metabv2.png", width= 10, height= 6)
+
+ECGS_metab_p
+# ggsave("output/ECGS_metabv2.png", width= 10, height= 6)
+
+ECNG_metab_p
+# ggsave("output/ECNG_metabv2.png", width= 10, height= 6)
+
+```

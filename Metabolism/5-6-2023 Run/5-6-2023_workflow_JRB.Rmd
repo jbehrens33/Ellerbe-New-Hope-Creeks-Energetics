@@ -1,0 +1,255 @@
+---
+title: "Metabolism Modeling"
+author: "Nick Marzolf and Jonny Behrens"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+# Set Up
+
+```{r setup, echo = FALSE, warning= FALSE, message=FALSE, results='hide', include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+
+## Clear environment
+#rm(list = ls())
+
+## Set project directory 
+projdir <- getwd() # Make sure you have the R Project open! 
+
+```
+
+# Preparing Data for Modeling
+## Step 1
+
+This will source in all functions (except this workflow) into the Global Env ----
+
+```{r}
+scripts <- list.files('code/', 
+                      pattern = '*.R', 
+                      full.names = TRUE)
+# exclude this script!
+scripts <- scripts[!scripts %in% 'code/workflow.R']
+
+# source them in 
+sapply(scripts, source, .GlobalEnv)
+```
+
+## Step 2
+
+Before you model  ----
+
+```{r}
+## this fun installs streamMetabolizer (and dependencies) and rstan (and dependencies) from github
+prep_bayes_model()
+
+# if this returns an error, running this below will suffice
+# install.packages("StanHeaders", repos = c("https://mc-stan.org/r-packages/", getOption("repos")))
+# install.packages("rstan", repos = c("https://mc-stan.org/r-packages/", getOption("repos")))
+# remotes::install_github("https://github.com/appling/unitted")
+# remotes::install_github("https://github.com/USGS-R/streamMetabolizer")
+
+# Load in the remaining packages
+library('tidyverse')
+library('rstan')
+library('StanHeaders')
+library('unitted')
+library('streamMetabolizer')
+library(StreamPULSE)
+
+#install.packages(c('cli', 'fansi', 'vctrs'))
+lapply(c('cli', 'fansi', 'vctrs'), library, character.only = TRUE)
+```
+
+## Step 3
+
+Find your sites ----
+ 
+```{r}
+#this will show you all the stream pulse sites for a given region, in this case North Carolina
+sp_sites <- StreamPULSE::query_available_data(region = 'NC') 
+
+# you can define your sites from sp_sites or define your sites if you know them
+my_sites <- c('NC_NHC')
+
+```
+
+## Step 4
+
+Get the data ----
+
+```{r}
+# get and save the data from streampulse
+get_sp_data(sitecode = 'NC_NHC', startdate= "2016-09-30", enddate= "2023-03-01")
+```
+
+Format for modeling ---- This is where we add in the rating curve for NHC
+ - Data from `pre_sp_data` function is saved here: 'data/raw/{site}_raw.rds'
+ 
+```{r}
+## this is a wrapper around StreamPULSE::prep_metabolism
+## there are more arguments to modify within this function, check them out ?prep_metabolism
+prep_sp_data_v2()
+```
+
+# Model in MLE
+## Step 5
+
+model and evaluate using MLE ----
+
+```{r}
+# the user will have to define which years (calendar) they are interested in
+model_mle(years = 2017:2022)
+```
+
+```{r}
+# evaluate the MLE outputs
+eval_mle()
+```
+
+# Some Exploration Before In Depth Modeling
+
+```{r}
+NC_NHC_raw <- readRDS("data/raw/NC_NHC_raw.rds")
+
+NC_NHC<-NC_NHC_raw$data %>%
+  pivot_wider(names_from = "variable", values_from = "value") %>% 
+  mutate(year = year(DateTime_UTC)) %>% 
+  mutate(day = as.Date(DateTime_UTC)) 
+
+NC_NHC_Daily<-NC_NHC %>% 
+  filter(flagtype != "Bad Data") %>% 
+  group_by(day, site) %>%
+  summarize(across(`AirPres_kPa`:`WaterTemp_C`, mean), .groups = "keep") %>% 
+  mutate(year = year(day)) %>% 
+  mutate(data_missing = if_else(is.na(WaterPres_kPa)|is.na(WaterTemp_C)|is.na(DO_mgL)|is.na(AirPres_kPa), "y", "n"))
+
+plot1<-NC_NHC_Daily %>% 
+  ggplot(aes(data_missing)) +
+  geom_bar() +
+  theme_classic() +
+  facet_wrap(~year) +   
+  theme(legend.position = "bottom") 
+plot1
+
+
+for(i in c(3:6)) {                              # Printing ggplot within for-loop
+
+  plots<-NC_NHC_Daily %>% 
+    rename(value = i) %>% 
+    ggplot(aes(x= day, y = value, color=year)) +
+    geom_point() +
+    theme_classic() +
+  #  facet_wrap(~year) +   
+    ylab(paste(colnames(NC_NHC[i]))) + 
+    labs(title = paste(colnames(NC_NHC_Daily[i]), " vs. Time")) +
+    theme(legend.position = "bottom") 
+  
+  print(plots)
+}
+```
+
+```{r}
+for(i in c(6:9)) {                              # Printing ggplot within for-loop
+
+  plots<-NC_NHC %>% 
+    rename(value = i) %>% 
+    ggplot(aes(x= DateTime_UTC, y = value, color=flagtype)) +
+    geom_point() +
+    theme_classic() +
+  #  facet_wrap(~year) +   
+    ylab(paste(colnames(NC_NHC[i]))) + 
+    labs(title = paste(colnames(NC_NHC[i]), " vs. Time")) +
+    theme(legend.position = "bottom") 
+  
+  print(plots)
+}
+```
+
+
+# Model in Bayes
+##Step 6
+
+model in Bayes ----
+
+`model_bays` function is the default
+`model_bays_nhc` function is specific to NHC
+
+```{r}
+
+#model_bayes(years = 2021:2023)
+
+model_bayes_nhc(years = 2017:2022)
+```
+
+## Step 7
+
+Prepare the usable outputs ----
+
+`diag_bayes` function output is stored in: data/model_runs/Bayes/diag_metab.csv
+
+```{r}
+# Find bad data in annual outputs
+diag_bayes()
+```
+
+`estimate_bayes` function output is stored in: 
+ - Site year specific: data/model_runs/Bayes/neon_metab_{site}_{year}.csv
+ - Compiled into one file: data/model_runs/Bayes/metab_estimates.csv
+ 
+```{r}
+# compile outputs
+estimate_bayes()
+```
+
+`filter_bayes` function output is stored in: data/filtered_estimates/filtered_metab_estimates.csv
+ 
+```{r}
+# filter out bad data from outputs
+filter_bayes()
+
+#This code might have a bug: an extra "/" in the output directory
+```
+
+# Merge Data
+
+Merge together yearly data into a combined folder for Bayes.
+
+The following code will give an error if it has already been run and the files already are created!
+
+```{r}
+Bayes_data_folder<-"data/model_runs/Bayes/"
+# get a list of all subfolders in the parent folder
+subfolders <- c("daily", "datadaily", "estimates")
+
+# create directory
+combined_dir <- 'data/model_runs/Bayes/combined/'
+dir.create(combined_dir)
+    
+# loop through each subfolder
+for (i in 1:length(subfolders)) {
+
+  # subfolder name
+  subfolder_name<-paste0(Bayes_data_folder, subfolders[i])
+  
+  # get a list of all CSV files in the subfolder
+  csv_files <- list.files(subfolder_name, pattern = ".csv")
+
+  # loop through each CSV file and read it into a dataframe
+  dfs <- list()
+  for (j in 1:length(csv_files)) {
+    df <- read.csv(paste0(subfolder_name, "/", csv_files[j]))
+    dfs[[j]] <- df }
+
+  # combine all dataframes into a single dataframe
+  combined_df <- dplyr::bind_rows(dfs)
+
+  # create a unique filename for the output CSV file
+  output_file <- paste0(str_remove_all(subfolder_name, Bayes_data_folder), "_combined", ".csv")
+
+  # write the combined dataframe to a new CSV file in the subfolder
+  write.csv(combined_df, file = paste0(Bayes_data_folder, "combined/", output_file), row.names = FALSE)
+
+}
+```
+```
+
