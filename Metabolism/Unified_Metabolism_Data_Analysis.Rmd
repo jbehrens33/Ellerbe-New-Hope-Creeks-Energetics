@@ -25,8 +25,7 @@ rm(list = ls())
 
 ## Libraries
 library(pacman)
-p_load(dplyr,ggplot2,tidyr,StreamPULSE,treemapify,ggpmisc,
-       dataRetrieval,lubridate,scales,imputeTS,zoo, ggpubr, tidyverse)
+p_load(ggpmisc,knitr,lubridate,scales,imputeTS, ggpubr, zoo,tidyverse)
 ```
 
 ```{r}
@@ -81,77 +80,13 @@ discharge_SD<-Discharge_Instant %>%
   rename(date = Date_UTC)
 ```
 
-
-### Daily: Ellerbe Gage
-
-```{r}
-# # Load in file names
-# filenames<-list.files(paste0(data_f, "Metabolism_2-2023/data/model_runs/Bayes/datadaily"),
-#                       pattern="*.csv", full.names = TRUE) 
-# 
-# # Remove NHC
-# files_to_remove <- grep("NHC", filenames)
-# filtered_filenames <- filenames[-files_to_remove]
-# 
-# # Combine into a list
-# l <- lapply(filtered_filenames, read_csv)
-# 
-# # Clean up names
-# short_names<-filtered_filenames %>%
-#   str_remove("data/model_runs/Bayes/datadaily/") %>%
-#   str_remove(data_f) %>% 
-#   str_remove(".csv")
-# 
-# names(l)<-short_names
-# 
-# # bind into 1 data.table, by columnname, fill missing with NA
-# EC_Q <- data.table::rbindlist( l, use.names = TRUE, fill = TRUE, idcol=short_names) %>%
-#   rename(source=1) %>%
-#   mutate(Site = if_else(str_detect(source, 'NC_EllerbeGlenn'), 'ECGS',
-#                         if_else(str_detect(source, 'NC_EllerbeClub'), 'ECNG', NA_character_)),
-#          .after=1)
-```
-
-### Daily: NHC
-
-```{r}
-# filenames<-list.files(paste0(data_f, "5-6-2023 Run/data/model_runs/Bayes/datadaily"), 
-#                         pattern="*.csv", full.names = TRUE)
-# 
-# l<-lapply(filenames, read_csv)
-# 
-# short_names<-filenames %>%
-#   str_remove("data/model_runs/Bayes/datadaily/") %>%
-#   str_remove(data_f) %>% 
-#   str_remove(".csv")
-# 
-# names(l)<-short_names
-# 
-# NHC_Q <- data.table::rbindlist( l, use.names = TRUE, fill = TRUE, idcol=short_names) %>%
-#   rename(source=1) %>%
-#   mutate(Site = if_else(str_detect(source, "NC_NHC"), 'NHC', NA_character_),
-#          .after=1)
-```
-
-```{r}
-# discharge<-EC_Q %>% 
-#   full_join(NHC_Q) %>% 
-#   mutate(Site = case_when(Site == "NHC" ~ "forested",
-#                           Site == "ECGS" ~ "wastewater dominated",
-#                           Site == "ECNG" ~ "stormwater dominated")) %>% 
-#   select(Site, date, discharge.daily) %>% 
-#   full_join(discharge_SD) %>% 
-#   mutate(discharge_exceed_2sd = if_else(discharge.daily > 2*SD, "Exceed 2 SD", "Does Not Exceed 2 SD")) %>% 
-#   select(-SD)
-```
-
 ## Metabolism 
 
 ### Ellerbe Creek
 
 ```{r}
 # Load in file names
-filenames<-list.files(paste0(data_f, "Metabolism_2-2023/data/model_runs/Bayes/daily"),
+filenames<-list.files(paste0(data_f, "EllerbeCreek_Metab_Model/data/model_runs/Bayes/daily"),
                       pattern="*.csv", full.names = TRUE) 
 
 # Combine into a list
@@ -176,7 +111,7 @@ EC_dt <- data.table::rbindlist( l, use.names = TRUE, fill = TRUE, idcol=short_na
 ### New Hope Creek
 
 ```{r}
-filenames<-list.files(paste0(data_f, "5-6-2023 Run/data/model_runs/Bayes/daily"), 
+filenames<-list.files(paste0(data_f, "NewHopeCreek_Metab_Model/data/model_runs/Bayes/daily"), 
                         pattern="*.csv", full.names = TRUE)
 
 l<-lapply(filenames, read_csv)
@@ -258,14 +193,16 @@ Not many of the days, but definitely a few
 dt %>% 
   dplyr::filter(date > as.Date("2021-04-01") & date < as.Date("2022-05-01")) %>% 
   count(Days_Modeled, Site) %>% 
-  pivot_wider(names_from = "Site", values_from = "n") 
+  pivot_wider(names_from = "Site", values_from = "n") %>% 
+  kable()
 
 dt %>% 
   dplyr::filter(date > as.Date("2021-04-01") & date < as.Date("2022-05-01")) %>% 
   count(Days_Modeled, Site)  %>% 
   mutate(total_count = sum(n), .by = Site) %>%
   mutate(Percent_days = round(100*n/total_count), .keep = "unused") %>% 
-  pivot_wider(names_from = "Site", values_from = "Percent_days")
+  pivot_wider(names_from = "Site", values_from = "Percent_days") %>% 
+  kable()
 ```
 
 # Check Model Performance
@@ -293,6 +230,8 @@ dt %>%
   scale_color_manual(values = pal_sites)
 ```
 
+Days with rhat below 1.05 threshold. 
+
 ```{r}
 dt %>% 
   dplyr::filter(!is.na(K600_daily_Rhat)) %>% 
@@ -302,9 +241,12 @@ dt %>%
   summarize(n = n(), 
             K600 = sum(Rhat_K600_low), 
             ER = sum(Rhat_K600_low), 
-            GPP = sum(Rhat_K600_low)) %>% 
+            GPP = sum(Rhat_K600_low), 
+            .by =  Site) %>% 
   pivot_longer(names_to = "measure", values_to = "value", K600:GPP) %>% 
-  mutate(Percent = 100*value/n)
+  mutate(Percent_of_days_below = round(100*value/n, 2), 
+         .keep = "unused") %>% 
+  kable() 
 ```
 
 ## K600 vs. ER
@@ -519,7 +461,7 @@ Range %>%
 
 ```{r}
 # Load in file names
-filenames<-list.files(paste0(data_f, "Metabolism_2-2023/data/model_runs/Bayes/mod_and_obs_DO"),
+filenames<-list.files(paste0(data_f, "EllerbeCreek_Metab_Model/data/model_runs/Bayes/mod_and_obs_DO"),
                       pattern="*.csv", full.names = TRUE) 
 
 # Remove NHC
@@ -527,7 +469,7 @@ files_to_remove <- grep("NHC", filenames)
 filtered_filenames <- filenames[-files_to_remove]
 
 # NHC filenames
-NHC_filenames<-list.files(paste0(data_f, "5-6-2023 Run/data/model_runs/Bayes/mod_and_obs_DO"),
+NHC_filenames<-list.files(paste0(data_f, "NewHopeCreek_Metab_Model/data/model_runs/Bayes/mod_and_obs_DO"),
                       pattern="*.csv", full.names = TRUE) 
 
 filenames_combined<-c(filtered_filenames, NHC_filenames)
@@ -559,6 +501,6 @@ inputs <- data.table::rbindlist(l, use.names = TRUE, fill = TRUE, idcol=short_na
 ### Save input data
 
 ```{r}
-write.csv(inputs, paste0(output_f, "Daily-Metabolism_INPUT_MERGED.csv"))
+write.csv(inputs, paste0(data_f, "Daily-Metabolism_INPUT_MERGED.csv"))
 ```
 
